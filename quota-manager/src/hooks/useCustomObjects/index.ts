@@ -13,14 +13,22 @@ const userAgent = createHttpUserAgent({
 });
 
 const useCustomObjects = (): any => {
-  const getCustomObjects = async (config = { headers: {} }) => {
+  const getCustomObjectsByStore = async (
+    key: any,
+    config = { headers: {} }
+  ) => {
     const data = await executeHttpClientRequest(
       async (options) => {
-        const res = await axios(buildApiUrl('/chanel-rfp-042024/stores'), {
-          ...config,
-          headers: options.headers,
-          withCredentials: options.credentials === 'include',
-        });
+        const res = await axios(
+          buildApiUrl(
+            `/chanel-rfp-042024/custom-objects?where=key%3D%22${key}%22`
+          ),
+          {
+            ...config,
+            headers: options.headers,
+            withCredentials: options.credentials === 'include',
+          }
+        );
         return {
           data: res.data,
           statusCode: res.status,
@@ -67,7 +75,7 @@ const useCustomObjects = (): any => {
     }
   };
 
-  return { getCustomObjects, createCustomObject };
+  return { getCustomObjectsByStore, createCustomObject };
 };
 
 export default useCustomObjects;

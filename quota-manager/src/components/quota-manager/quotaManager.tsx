@@ -19,7 +19,7 @@ import {
 
 const QuotaManager: React.FC = () => {
   const { getCategories } = useCategories();
-  const { createCustomObject } = useCustomObjects();
+  const { createCustomObject, getCustomObjectsByStore } = useCustomObjects();
 
   const [categories, setCategories] = useState<any[]>([]);
 
@@ -53,6 +53,42 @@ const QuotaManager: React.FC = () => {
 
   const [productLimits, setProductLimits] = useState<any[]>([]);
   const showNotification = useShowNotification();
+
+  const clearRules = () => {
+    setCartLimit('');
+    setSelectedCategory('');
+    setCriteria('');
+    setTotalValue('');
+    setFlag('');
+    setSku('');
+    setType('');
+    setCustomerGroup('');
+    setProductLimits([]);
+  };
+
+  const clearAll = () => {
+    clearRules();
+    setStSelection('');
+  };
+
+  useMemo(() => {
+    async function retrieveCategories() {
+      try {
+        const result = await getCustomObjectsByStore(stSelection?.key);
+
+        result.results.map((customObject: any) => {
+          setCartLimit(customObject.value.maximumCartValue || '');
+          setProductLimits(customObject.value.productRules);
+        });
+
+        console.log(result);
+      } catch (error) {
+        //console.log(error);
+      }
+    }
+
+    retrieveCategories();
+  }, [stSelection]);
 
   return (
     <>
@@ -232,47 +268,52 @@ const QuotaManager: React.FC = () => {
                 </p>
               ))}
 
-              <PrimaryButton
-                style={{ width: 220, textAlign: 'justify', marginTop: 10 }}
-                label="Create Quota Configuration"
-                type="button"
-                size="big"
-                isDisabled={cartLimit === '' && productLimits.length <= 0}
-                onClick={() => {
-                  createCustomObject({
-                    container: 'cart-rules',
-                    key: stSelection?.key,
-                    value: {
-                      customerGroup: customerGroup,
-                      maximumCartValue: cartLimit,
-                      productRules: productLimits,
-                    },
-                  }).then((response: any) => {
-                    if (response.statusCode) {
-                      showNotification({
-                        kind: NOTIFICATION_KINDS_PAGE.error,
-                        domain: DOMAINS.PAGE,
-                        text: response.message,
-                      });
-                    } else {
-                      showNotification({
-                        kind: NOTIFICATION_KINDS_SIDE.success,
-                        domain: DOMAINS.SIDE,
-                        text: `Configuration created for ${stSelection?.name['en-US']}`,
-                      });
-                    }
-                  });
-                  setStSelection('');
-                  setCartLimit('');
-                  setProductLimits([]);
-                  setType('');
-                  setSku('');
-                  setSelectedCategory('');
-                  setCriteria('');
-                  setTotalValue('');
-                  setFlag('');
-                }}
-              />
+              <div className="flex gap-4">
+                <PrimaryButton
+                  style={{ width: 220, textAlign: 'justify', marginTop: 10 }}
+                  label="Create Quota Configuration"
+                  type="button"
+                  size="big"
+                  isDisabled={cartLimit === '' && productLimits.length <= 0}
+                  onClick={() => {
+                    createCustomObject({
+                      container: 'general-cart-rules',
+                      key: stSelection?.key,
+                      value: {
+                        customerGroup: customerGroup,
+                        maximumCartValue: cartLimit,
+                        productRules: productLimits,
+                      },
+                    }).then((response: any) => {
+                      if (response.statusCode) {
+                        showNotification({
+                          kind: NOTIFICATION_KINDS_PAGE.error,
+                          domain: DOMAINS.PAGE,
+                          text: response.message,
+                        });
+                      } else {
+                        showNotification({
+                          kind: NOTIFICATION_KINDS_SIDE.success,
+                          domain: DOMAINS.SIDE,
+                          text: `Configuration created for ${stSelection?.name['en-US']}`,
+                        });
+                      }
+                    });
+                    clearAll();
+                  }}
+                />
+
+                <PrimaryButton
+                  style={{ width: 110, textAlign: 'justify', marginTop: 10 }}
+                  label="Clear Rules"
+                  type="button"
+                  size="big"
+                  isDisabled={cartLimit === '' && productLimits.length <= 0}
+                  onClick={() => {
+                    clearRules();
+                  }}
+                />
+              </div>
             </div>
           </div>
         ) : null}
