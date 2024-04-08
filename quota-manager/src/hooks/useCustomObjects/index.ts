@@ -14,21 +14,23 @@ const userAgent = createHttpUserAgent({
 
 const useCustomObjects = (): any => {
   const getCustomObjectsByStore = async (
+    container: any,
     key: any,
     config = { headers: {} }
   ) => {
     const data = await executeHttpClientRequest(
       async (options) => {
+        console.log(container);
+        console.log(key);
         const res = await axios(
-          buildApiUrl(
-            `/chanel-rfp-042024/custom-objects?where=key%3D%22${key}%22`
-          ),
+          buildApiUrl(`/chanel-rfp-042024/custom-objects/${container}/${key}`),
           {
             ...config,
             headers: options.headers,
             withCredentials: options.credentials === 'include',
           }
         );
+        console.log(res.data);
         return {
           data: res.data,
           statusCode: res.status,

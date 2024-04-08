@@ -74,12 +74,13 @@ const QuotaManager: React.FC = () => {
   useMemo(() => {
     async function retrieveCategories() {
       try {
-        const result = await getCustomObjectsByStore(stSelection?.key);
+        const result = await getCustomObjectsByStore(
+          'general-cart-rules',
+          stSelection?.key
+        );
 
-        result.results.map((customObject: any) => {
-          setCartLimit(customObject.value.maximumCartValue || '');
-          setProductLimits(customObject.value.productRules);
-        });
+        setCartLimit(result.value.maximumCartValue || '');
+        setProductLimits(result.value.productRules);
 
         console.log(result);
       } catch (error) {
