@@ -44,6 +44,7 @@ const QuotaManager: React.FC = () => {
 
   const [stSelection, setStSelection] = useState<any>();
   const [cartLimit, setCartLimit] = useState<any>('');
+  const [samplesLimit, setSamplesLimit] = useState<any>('');
   const [selectedCategory, setSelectedCategory] = useState<any>();
   const [criteria, setCriteria] = useState<any>();
   const [totalValue, setTotalValue] = useState<any>('');
@@ -58,6 +59,7 @@ const QuotaManager: React.FC = () => {
 
   const clearRules = () => {
     setCartLimit('');
+    setSamplesLimit('');
     setSelectedCategory('');
     setCriteria('');
     setTotalValue('');
@@ -86,6 +88,7 @@ const QuotaManager: React.FC = () => {
         );
 
         setCartLimit(result.value.maximumCartValue || '');
+        setSamplesLimit(result.value.maxSamples || '');
         setProductLimits(result.value.productRules || '');
 
         console.log(result);
@@ -117,19 +120,36 @@ const QuotaManager: React.FC = () => {
                 Quota configuration for Employees
               </CheckboxInput>
             </div>
-            <div className="flex items-center mt-5">
-              <Text.Body> Max cart total Value: </Text.Body>
-              <div className="mx-5 w-20">
-                <TextInput
-                  value={cartLimit}
-                  onChange={(event) => {
-                    if (event.target.value.length === 0) {
-                      setCartLimit('');
-                    } else {
-                      setCartLimit(event.target.value);
-                    }
-                  }}
-                />
+            <div>
+              <div className="flex items-center mt-5">
+                <Text.Body> Max cart total Value: </Text.Body>
+                <div className="mx-5 w-20">
+                  <TextInput
+                    value={cartLimit}
+                    onChange={(event) => {
+                      if (event.target.value.length === 0) {
+                        setCartLimit('');
+                      } else {
+                        setCartLimit(event.target.value);
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center mt-5">
+                <Text.Body> Max qty of Samples allowed: </Text.Body>
+                <div className="mx-5 w-20">
+                  <TextInput
+                    value={samplesLimit}
+                    onChange={(event) => {
+                      if (event.target.value.length === 0) {
+                        setSamplesLimit('');
+                      } else {
+                        setSamplesLimit(event.target.value);
+                      }
+                    }}
+                  />
+                </div>
               </div>
             </div>
             <div className="mt-5">
@@ -268,6 +288,12 @@ const QuotaManager: React.FC = () => {
                 </p>
               ) : null}
 
+              {samplesLimit !== '' ? (
+                <p>
+                  The max quantity of sample Items on cart is{' '}
+                  <b>{samplesLimit}</b>
+                </p>
+              ) : null}
               {productLimits.map((rule: any) => (
                 <p key={rule.index}>
                   The max <b>{rule.criteria} </b>for products with{' '}
@@ -301,6 +327,7 @@ const QuotaManager: React.FC = () => {
                       value: {
                         customerGroup: customerGroup,
                         maximumCartValue: cartLimit,
+                        maxSamples: samplesLimit,
                         productRules: productLimits,
                       },
                     }).then((response: any) => {
