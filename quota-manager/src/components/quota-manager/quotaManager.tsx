@@ -9,6 +9,7 @@ import PrimaryButton from '@commercetools-uikit/primary-button';
 import { PageContentNarrow } from '@commercetools-frontend/application-components';
 import useCategories from '../../hooks/useCategories';
 import useCustomObjects from '../../hooks/useCustomObjects';
+import CheckboxInput from '@commercetools-uikit/checkbox-input';
 
 import { useShowNotification } from '@commercetools-frontend/actions-global';
 import {
@@ -50,6 +51,7 @@ const QuotaManager: React.FC = () => {
   const [sku, setSku] = useState<any>();
   const [type, setType] = useState<any>('');
   const [customerGroup, setCustomerGroup] = useState<any>();
+  const [isEmployee, setIsEmployee] = useState<boolean>(true);
 
   const [productLimits, setProductLimits] = useState<any[]>([]);
   const showNotification = useShowNotification();
@@ -73,14 +75,18 @@ const QuotaManager: React.FC = () => {
 
   useMemo(() => {
     async function retrieveCategories() {
+      let objectKey = 'general-cart-rules';
       try {
+        if (isEmployee) {
+          objectKey = 'employee-cart-rules';
+        }
         const result = await getCustomObjectsByStore(
-          'general-cart-rules',
+          objectKey,
           stSelection?.key
         );
 
         setCartLimit(result.value.maximumCartValue || '');
-        setProductLimits(result.value.productRules);
+        setProductLimits(result.value.productRules || '');
 
         console.log(result);
       } catch (error) {
@@ -89,7 +95,7 @@ const QuotaManager: React.FC = () => {
     }
 
     retrieveCategories();
-  }, [stSelection]);
+  }, [stSelection, isEmployee]);
 
   return (
     <>
@@ -103,6 +109,14 @@ const QuotaManager: React.FC = () => {
             <Text.Headline as="h2">
               Quota configuration for {stSelection?.name['en-US']}
             </Text.Headline>
+            <div className="pt-5">
+              <CheckboxInput
+                onChange={() => setIsEmployee(!isEmployee)}
+                isChecked={isEmployee}
+              >
+                Quota configuration for Employees
+              </CheckboxInput>
+            </div>
             <div className="flex items-center mt-5">
               <Text.Body> Max cart total Value: </Text.Body>
               <div className="mx-5 w-20">
@@ -278,7 +292,11 @@ const QuotaManager: React.FC = () => {
                   isDisabled={cartLimit === '' && productLimits.length <= 0}
                   onClick={() => {
                     createCustomObject({
-                      container: 'general-cart-rules',
+                      container: `${
+                        isEmployee
+                          ? 'employee-cart-rules'
+                          : 'general-cart-rules'
+                      }`,
                       key: stSelection?.key,
                       value: {
                         customerGroup: customerGroup,
