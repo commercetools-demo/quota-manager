@@ -20,8 +20,6 @@ const useCustomObjects = (): any => {
   ) => {
     const data = await executeHttpClientRequest(
       async (options) => {
-        console.log(container);
-        console.log(key);
         const res = await axios(
           buildApiUrl(`/chanel-rfp-042024/custom-objects/${container}/${key}`),
           {
@@ -77,7 +75,39 @@ const useCustomObjects = (): any => {
     }
   };
 
-  return { getCustomObjectsByStore, createCustomObject };
+  const deleteCustomObjectsByStore = async (
+    container: any,
+    key: any,
+    config = { headers: {} }
+  ) => {
+    const data = await executeHttpClientRequest(
+      async (options) => {
+        const res = await axios(
+          buildApiUrl(`/chanel-rfp-042024/custom-objects/${container}/${key}`),
+          {
+            ...config,
+            method: 'delete',
+            headers: options.headers,
+            withCredentials: options.credentials === 'include',
+          }
+        );
+
+        return {
+          data: res.data,
+          statusCode: res.status,
+          getHeader: (key) => res.headers[key],
+        };
+      },
+      { userAgent, headers: config.headers }
+    );
+    return data;
+  };
+
+  return {
+    getCustomObjectsByStore,
+    createCustomObject,
+    deleteCustomObjectsByStore,
+  };
 };
 
 export default useCustomObjects;

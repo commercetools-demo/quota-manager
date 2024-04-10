@@ -28,9 +28,7 @@ const StoreSelector: React.FC<StoreSelectorProps> = ({
             { value: stResult, label: stResult.name['en-US'] },
           ]);
         });
-      } catch (error) {
-        //console.log(error);
-      }
+      } catch (error) {}
     }
     retrieveStores();
   }, []);

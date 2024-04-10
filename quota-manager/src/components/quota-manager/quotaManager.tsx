@@ -6,6 +6,7 @@ import SelectInput from '@commercetools-uikit/select-input';
 import StoreSelector from './storeSelector';
 import Text from '@commercetools-uikit/text';
 import PrimaryButton from '@commercetools-uikit/primary-button';
+import SecondaryButton from '@commercetools-uikit/secondary-button';
 import { PageContentNarrow } from '@commercetools-frontend/application-components';
 import useCategories from '../../hooks/useCategories';
 import useCustomObjects from '../../hooks/useCustomObjects';
@@ -20,7 +21,11 @@ import {
 
 const QuotaManager: React.FC = () => {
   const { getCategories } = useCategories();
-  const { createCustomObject, getCustomObjectsByStore } = useCustomObjects();
+  const {
+    createCustomObject,
+    getCustomObjectsByStore,
+    deleteCustomObjectsByStore,
+  } = useCustomObjects();
 
   const [categories, setCategories] = useState<any[]>([]);
 
@@ -53,6 +58,9 @@ const QuotaManager: React.FC = () => {
   const [type, setType] = useState<any>('');
   const [customerGroup, setCustomerGroup] = useState<any>();
   const [isEmployee, setIsEmployee] = useState<boolean>(true);
+  const [removeList, setRemoveList] = useState<any[]>([]);
+  const [thereIsQuotaConfigured, setThereIsQuotaConfigured] =
+    useState<boolean>(false);
 
   const [productLimits, setProductLimits] = useState<any[]>([]);
   const showNotification = useShowNotification();
@@ -86,12 +94,12 @@ const QuotaManager: React.FC = () => {
           objectKey,
           stSelection?.key
         );
-
+        if (result.value) {
+          setThereIsQuotaConfigured(true);
+        }
         setCartLimit(result.value.maximumCartValue || '');
         setSamplesLimit(result.value.maxSamples || '');
         setProductLimits(result.value.productRules || '');
-
-        console.log(result);
       } catch (error) {
         //console.log(error);
       }
@@ -99,6 +107,53 @@ const QuotaManager: React.FC = () => {
 
     retrieveCategories();
   }, [stSelection, isEmployee]);
+
+  const handleDeleteConfiguration = async () => {
+    let objectKey = 'general-cart-rules';
+    try {
+      if (isEmployee) {
+        objectKey = 'employee-cart-rules';
+      }
+      deleteCustomObjectsByStore(objectKey, stSelection?.key).then(
+        (response: any) => {
+          if (response.statusCode) {
+            showNotification({
+              kind: NOTIFICATION_KINDS_PAGE.error,
+              domain: DOMAINS.PAGE,
+              text: response.message,
+            });
+          } else {
+            showNotification({
+              kind: NOTIFICATION_KINDS_SIDE.success,
+              domain: DOMAINS.SIDE,
+              text: `Configuration deleted for ${stSelection?.name['en-US']}`,
+            });
+          }
+        }
+      );
+    } catch (error) {
+      //console.log(error);
+    }
+    setThereIsQuotaConfigured(false);
+    clearAll();
+  };
+
+  const handleDeletionList = (rule: any) => {
+    const itemIndex = removeList.indexOf(rule);
+    if (itemIndex === -1) {
+      setRemoveList([...removeList, rule]);
+    } else {
+      setRemoveList(removeList.filter((item) => item !== rule));
+    }
+  };
+
+  const clearSelectedRules = () => {
+    const finalArray = productLimits.filter(
+      (element) => !removeList.includes(element)
+    );
+    setProductLimits(finalArray);
+    setRemoveList([]);
+  };
 
   return (
     <>
@@ -122,7 +177,7 @@ const QuotaManager: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center mt-5">
-                <Text.Body> Max cart total Value: </Text.Body>
+                <Text.Body> Maximum cart total value: </Text.Body>
                 <div className="mx-5 w-20">
                   <TextInput
                     value={cartLimit}
@@ -137,7 +192,7 @@ const QuotaManager: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center mt-5">
-                <Text.Body> Max qty of Samples allowed: </Text.Body>
+                <Text.Body> Maximum quantity of samples allowed: </Text.Body>
                 <div className="mx-5 w-20">
                   <TextInput
                     value={samplesLimit}
@@ -284,31 +339,61 @@ const QuotaManager: React.FC = () => {
             <div className="mt-5">
               {cartLimit > 0 ? (
                 <p>
-                  The max total value for the whole cart is <b>{cartLimit}</b>
+                  The maximum total value for the whole cart is{' '}
+                  <b>{cartLimit}</b>
                 </p>
               ) : null}
 
               {samplesLimit !== '' ? (
                 <p>
-                  The max quantity of sample Items on cart is{' '}
+                  The maximum quantity of sample Items on cart is{' '}
                   <b>{samplesLimit}</b>
                 </p>
               ) : null}
               {productLimits.map((rule: any) => (
-                <p key={rule.index}>
-                  The max <b>{rule.criteria} </b>for products with{' '}
-                  <b>
-                    {rule.type} ={' '}
-                    {rule.equals.categoryName ? (
-                      <>{rule.equals.categoryName['en-US']}</>
-                    ) : (
-                      <>{rule.equals}</>
-                    )}
-                  </b>{' '}
-                  is <b>{rule.value}</b>
-                </p>
+                <>
+                  <CheckboxInput
+                    onChange={() => handleDeletionList(rule)}
+                    isChecked={removeList.indexOf(rule) !== -1}
+                  >
+                    <p key={rule.index}>
+                      The max <b>{rule.criteria} </b>for products with{' '}
+                      <b>
+                        {rule.type} ={' '}
+                        {rule.equals.categoryName ? (
+                          <>{rule.equals.categoryName['en-US']}</>
+                        ) : (
+                          <>{rule.equals}</>
+                        )}
+                      </b>{' '}
+                      is <b>{rule.value}</b>
+                    </p>
+                  </CheckboxInput>
+                </>
               ))}
 
+              <div className="flex gap-4">
+                <SecondaryButton
+                  style={{ width: 130, textAlign: 'justify', marginTop: 10 }}
+                  label="Clear All Rules"
+                  type="button"
+                  size="big"
+                  isDisabled={cartLimit === '' && productLimits.length <= 0}
+                  onClick={() => {
+                    clearRules();
+                  }}
+                />
+                <SecondaryButton
+                  style={{ width: 170, textAlign: 'justify', marginTop: 10 }}
+                  label="Clear Selected Rules"
+                  type="button"
+                  size="big"
+                  isDisabled={cartLimit === '' && productLimits.length <= 0}
+                  onClick={() => {
+                    clearSelectedRules();
+                  }}
+                />
+              </div>
               <div className="flex gap-4">
                 <PrimaryButton
                   style={{ width: 220, textAlign: 'justify', marginTop: 10 }}
@@ -350,13 +435,13 @@ const QuotaManager: React.FC = () => {
                 />
 
                 <PrimaryButton
-                  style={{ width: 110, textAlign: 'justify', marginTop: 10 }}
-                  label="Clear Rules"
+                  style={{ width: 215, textAlign: 'justify', marginTop: 10 }}
+                  label="Delete Quota Configuration "
                   type="button"
                   size="big"
-                  isDisabled={cartLimit === '' && productLimits.length <= 0}
+                  isDisabled={!thereIsQuotaConfigured}
                   onClick={() => {
-                    clearRules();
+                    handleDeleteConfiguration();
                   }}
                 />
               </div>
