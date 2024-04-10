@@ -388,7 +388,7 @@ const QuotaManager: React.FC = () => {
                   label="Clear Selected Rules"
                   type="button"
                   size="big"
-                  isDisabled={cartLimit === '' && productLimits.length <= 0}
+                  isDisabled={removeList.length <= 0}
                   onClick={() => {
                     clearSelectedRules();
                   }}
@@ -397,7 +397,9 @@ const QuotaManager: React.FC = () => {
               <div className="flex gap-4">
                 <PrimaryButton
                   style={{ width: 220, textAlign: 'justify', marginTop: 10 }}
-                  label="Create Quota Configuration"
+                  label={`${
+                    thereIsQuotaConfigured ? 'Update' : 'Create'
+                  } Quota Configuration`}
                   type="button"
                   size="big"
                   isDisabled={cartLimit === '' && productLimits.length <= 0}
