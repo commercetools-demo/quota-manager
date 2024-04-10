@@ -61,7 +61,6 @@ const QuotaManager: React.FC = () => {
   const [removeList, setRemoveList] = useState<any[]>([]);
   const [thereIsQuotaConfigured, setThereIsQuotaConfigured] =
     useState<boolean>(false);
-
   const [productLimits, setProductLimits] = useState<any[]>([]);
   const showNotification = useShowNotification();
 
@@ -97,11 +96,14 @@ const QuotaManager: React.FC = () => {
         if (result.value) {
           setThereIsQuotaConfigured(true);
         }
-        setCartLimit(result.value.maximumCartValue || '');
-        setSamplesLimit(result.value.maxSamples || '');
-        setProductLimits(result.value.productRules || '');
+        setCartLimit(result.value.maximumCartValue);
+        setSamplesLimit(result.value.maxSamples);
+        setProductLimits(result.value.productRules);
       } catch (error) {
-        //console.log(error);
+        setCartLimit('');
+        setSamplesLimit('');
+        setProductLimits([]);
+        setThereIsQuotaConfigured(false);
       }
     }
 
