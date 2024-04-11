@@ -96,9 +96,9 @@ const QuotaManager: React.FC = () => {
         if (result.value) {
           setThereIsQuotaConfigured(true);
         }
-        setCartLimit(result.value.maximumCartValue);
-        setSamplesLimit(result.value.maxSamples);
-        setProductLimits(result.value.productRules);
+        setCartLimit(result.value.maximumCartValue || '');
+        setSamplesLimit(result.value.maxSamples || '');
+        setProductLimits(result.value.productRules || '');
       } catch (error) {
         setCartLimit('');
         setSamplesLimit('');
