@@ -48,6 +48,7 @@
     "@commercetools-uikit/icons": "^18.2.0",
     "@commercetools-uikit/link": "^18.2.0",
     "@commercetools-uikit/loading-spinner": "^18.2.0",
+    "@commercetools-uikit/localized-money-input": "^19.0.0",
     "@commercetools-uikit/localized-text-field": "^18.2.0",
     "@commercetools-uikit/localized-text-input": "^18.2.0",
     "@commercetools-uikit/notifications": "^18.2.0",

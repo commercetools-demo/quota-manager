@@ -11,6 +11,7 @@ import { PageContentNarrow } from '@commercetools-frontend/application-component
 import useCategories from '../../hooks/useCategories';
 import useCustomObjects from '../../hooks/useCustomObjects';
 import CheckboxInput from '@commercetools-uikit/checkbox-input';
+import MoneyInput from '@commercetools-uikit/money-input';
 
 import { useShowNotification } from '@commercetools-frontend/actions-global';
 import {
@@ -18,6 +19,7 @@ import {
   NOTIFICATION_KINDS_SIDE,
   NOTIFICATION_KINDS_PAGE,
 } from '@commercetools-frontend/constants';
+import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 
 const QuotaManager: React.FC = () => {
   const { getCategories } = useCategories();
@@ -47,8 +49,9 @@ const QuotaManager: React.FC = () => {
     retrieveCategories();
   }, []);
 
+  const moneyInitialValue = { amount: '', currencyCode: '' };
   const [stSelection, setStSelection] = useState<any>();
-  const [cartLimit, setCartLimit] = useState<any>('');
+  const [cartLimits, setcartLimits] = useState<any[]>([]);
   const [samplesLimit, setSamplesLimit] = useState<any>('');
   const [selectedCategory, setSelectedCategory] = useState<any>();
   const [criteria, setCriteria] = useState<any>();
@@ -62,10 +65,16 @@ const QuotaManager: React.FC = () => {
   const [thereIsQuotaConfigured, setThereIsQuotaConfigured] =
     useState<boolean>(false);
   const [productLimits, setProductLimits] = useState<any[]>([]);
+  const [stagingCartLimits, setStagingCartLimits] =
+    useState<any>(moneyInitialValue);
+  const [cartLimitsCurrenciesConfigured, setCartLimitsCurrenciesConfigured] =
+    useState<any[]>([]);
+  const [selectedTotalValue, setSelectedTotalValue] =
+    useState<any>(moneyInitialValue);
   const showNotification = useShowNotification();
-
+  const applicationContext = useApplicationContext();
   const clearRules = () => {
-    setCartLimit('');
+    setcartLimits([]);
     setSamplesLimit('');
     setSelectedCategory('');
     setCriteria('');
@@ -96,11 +105,26 @@ const QuotaManager: React.FC = () => {
         if (result.value) {
           setThereIsQuotaConfigured(true);
         }
-        setCartLimit(result.value.maximumCartValue || '');
+        if (result.value.maximumCartValue) {
+          setCartLimitsCurrenciesConfigured([]);
+          result.value.maximumCartValue.map((configuredLimit: any) => {
+            console.log(configuredLimit);
+            setCartLimitsCurrenciesConfigured(
+              (cartLimitsCurrenciesConfigured) => [
+                ...cartLimitsCurrenciesConfigured,
+                configuredLimit.currencyCode,
+              ]
+            );
+          });
+        }
+
+        console.log(cartLimitsCurrenciesConfigured);
+        setcartLimits(result.value.maximumCartValue || []);
         setSamplesLimit(result.value.maxSamples || '');
         setProductLimits(result.value.productRules || '');
       } catch (error) {
-        setCartLimit('');
+        setCartLimitsCurrenciesConfigured([]);
+        setcartLimits([]);
         setSamplesLimit('');
         setProductLimits([]);
         setThereIsQuotaConfigured(false);
@@ -109,6 +133,13 @@ const QuotaManager: React.FC = () => {
 
     retrieveCategories();
   }, [stSelection, isEmployee]);
+
+  const handleAddValueRules = (valueObj: any) => {
+    return MoneyInput.convertToMoneyValue(
+      valueObj,
+      applicationContext?.dataLocale || 'fr_FR'
+    );
+  };
 
   const handleDeleteConfiguration = async () => {
     let objectKey = 'general-cart-rules';
@@ -167,7 +198,8 @@ const QuotaManager: React.FC = () => {
         {stSelection ? (
           <div className="pt-5">
             <Text.Headline as="h2">
-              Quota configuration for {stSelection?.name['en-US']}
+              Quota configuration for{' '}
+              {stSelection?.name[applicationContext.dataLocale || 'en-US']}
             </Text.Headline>
             <div className="pt-5">
               <CheckboxInput
@@ -180,19 +212,59 @@ const QuotaManager: React.FC = () => {
             <div>
               <div className="flex items-center mt-5">
                 <Text.Body> Maximum cart total value: </Text.Body>
-                <div className="mx-5 w-20">
-                  <TextInput
-                    value={cartLimit}
+                <div className="mx-5 w-52">
+                  <MoneyInput
+                    value={stagingCartLimits}
                     onChange={(event) => {
-                      if (event.target.value.length === 0) {
-                        setCartLimit('');
-                      } else {
-                        setCartLimit(event.target.value);
+                      if (event?.target?.id?.endsWith('.amount')) {
+                        setStagingCartLimits((stagingCartLimits: any) => {
+                          return {
+                            amount: event.target.value,
+                            currencyCode: stagingCartLimits.currencyCode,
+                          };
+                        });
                       }
+
+                      if (event?.target?.id?.endsWith('.currencyCode'))
+                        setStagingCartLimits((stagingCartLimits: any) => {
+                          return {
+                            amount: stagingCartLimits.amount,
+                            currencyCode: event.target.value,
+                          };
+                        });
+                    }}
+                    currencies={applicationContext.project?.currencies.filter(
+                      (currency) =>
+                        cartLimitsCurrenciesConfigured.indexOf(currency) === -1
+                    )}
+                  />
+                </div>
+                <div>
+                  <PrimaryButton
+                    style={{ width: 210, textAlign: 'justify', marginTop: 0 }}
+                    label={`Add total for ${stagingCartLimits.currencyCode} currency`}
+                    type="button"
+                    size="big"
+                    isDisabled={
+                      !stagingCartLimits.currencyCode ||
+                      !stagingCartLimits.amount
+                    }
+                    onClick={() => {
+                      setcartLimits([
+                        ...cartLimits,
+                        handleAddValueRules(stagingCartLimits),
+                      ]);
+
+                      setCartLimitsCurrenciesConfigured([
+                        ...cartLimitsCurrenciesConfigured,
+                        stagingCartLimits.currencyCode,
+                      ]);
+                      setStagingCartLimits(moneyInitialValue);
                     }}
                   />
                 </div>
               </div>
+
               <div className="flex items-center mt-5">
                 <Text.Body> Maximum quantity of samples allowed: </Text.Body>
                 <div className="mx-5 w-20">
@@ -224,7 +296,10 @@ const QuotaManager: React.FC = () => {
                   <Text.Body>Criteria:</Text.Body>
                 </div>
                 <div className="col-start-4 w-100">
-                  <Text.Body>Value:</Text.Body>
+                  <Text.Body>
+                    {criteria?.charAt(0).toUpperCase() + criteria?.slice(1) ||
+                      'Quantity'}
+                  </Text.Body>
                 </div>
               </div>
             </div>
@@ -293,26 +368,52 @@ const QuotaManager: React.FC = () => {
                   ></SelectInput>
                 </div>
                 <div className="col-start-4 w-100">
-                  <TextInput
-                    value={totalValue}
-                    onChange={(event) => {
-                      if (event.target.value.length === 0) {
-                        setTotalValue('');
-                      } else {
-                        setTotalValue(event.target.value);
-                      }
-                    }}
-                  />
+                  {criteria !== 'value' ? (
+                    <TextInput
+                      value={totalValue}
+                      onChange={(event) => {
+                        if (event.target.value.length === 0) {
+                          setTotalValue('');
+                        } else {
+                          setTotalValue(event.target.value);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <MoneyInput
+                      value={selectedTotalValue}
+                      onChange={(event) => {
+                        if (event?.target?.id?.endsWith('.amount')) {
+                          setSelectedTotalValue((selectedTotalValue: any) => {
+                            return {
+                              amount: event.target.value,
+                              currencyCode: selectedTotalValue.currencyCode,
+                            };
+                          });
+                        }
+
+                        if (event?.target?.id?.endsWith('.currencyCode'))
+                          setSelectedTotalValue((selectedTotalValue: any) => {
+                            return {
+                              amount: selectedTotalValue.amount,
+                              currencyCode: event.target.value,
+                            };
+                          });
+                      }}
+                      currencies={applicationContext.project?.currencies}
+                    />
+                  )}
                 </div>
               </div>
             </div>
+
             <div>
               <PrimaryButton
                 style={{ width: 100, textAlign: 'justify', marginTop: 10 }}
                 label="Add Rule"
                 type="button"
                 size="big"
-                isDisabled={totalValue === ''}
+                isDisabled={!totalValue && !selectedTotalValue.amount}
                 onClick={() => {
                   setProductLimits((productLimits: any) => [
                     ...productLimits,
@@ -324,7 +425,8 @@ const QuotaManager: React.FC = () => {
                           categoryName: selectedCategory.name,
                         },
                       criteria: criteria,
-                      value: totalValue,
+                      value:
+                        totalValue || handleAddValueRules(selectedTotalValue),
                     },
                   ]);
                   setType('');
@@ -333,17 +435,32 @@ const QuotaManager: React.FC = () => {
                   setCriteria('');
                   setTotalValue('');
                   setFlag('');
+                  setSelectedTotalValue(moneyInitialValue);
                 }}
               />
             </div>
 
             <Text.Headline as="h2">Configured Rules: </Text.Headline>
             <div className="mt-5">
-              {cartLimit > 0 ? (
-                <p>
-                  The maximum total value for the whole cart is{' '}
-                  <b>{cartLimit}</b>
-                </p>
+              {cartLimits.length > 0 ? (
+                <>
+                  {cartLimits.map((cartLimit) => {
+                    return (
+                      <p key={cartLimit.index}>
+                        The maximum total value for the whole cart is{' '}
+                        <b>
+                          {(cartLimit.centAmount / 10000).toLocaleString(
+                            undefined,
+                            {
+                              style: 'currency',
+                              currency: cartLimit.currencyCode,
+                            }
+                          )}
+                        </b>
+                      </p>
+                    );
+                  })}
+                </>
               ) : null}
 
               {samplesLimit !== '' ? (
@@ -355,6 +472,7 @@ const QuotaManager: React.FC = () => {
               {productLimits.map((rule: any) => (
                 <>
                   <CheckboxInput
+                    key={rule.index}
                     onChange={() => handleDeletionList(rule)}
                     isChecked={removeList.indexOf(rule) !== -1}
                   >
@@ -368,7 +486,22 @@ const QuotaManager: React.FC = () => {
                           <>{rule.equals}</>
                         )}
                       </b>{' '}
-                      is <b>{rule.value}</b>
+                      is{' '}
+                      <b>
+                        {rule.criteria === 'quantity' ? (
+                          rule.value
+                        ) : (
+                          <b>
+                            {(rule.value.centAmount / 10000).toLocaleString(
+                              undefined,
+                              {
+                                style: 'currency',
+                                currency: rule.value.currencyCode,
+                              }
+                            )}
+                          </b>
+                        )}
+                      </b>
                     </p>
                   </CheckboxInput>
                 </>
@@ -380,7 +513,9 @@ const QuotaManager: React.FC = () => {
                   label="Clear All Rules"
                   type="button"
                   size="big"
-                  isDisabled={cartLimit === '' && productLimits.length <= 0}
+                  isDisabled={
+                    cartLimits.length <= 0 && productLimits.length <= 0
+                  }
                   onClick={() => {
                     clearRules();
                   }}
@@ -404,7 +539,9 @@ const QuotaManager: React.FC = () => {
                   } Quota Configuration`}
                   type="button"
                   size="big"
-                  isDisabled={cartLimit === '' && productLimits.length <= 0}
+                  isDisabled={
+                    cartLimits.length <= 0 && productLimits.length <= 0
+                  }
                   onClick={() => {
                     createCustomObject({
                       container: `${
@@ -415,7 +552,7 @@ const QuotaManager: React.FC = () => {
                       key: stSelection?.key,
                       value: {
                         customerGroup: customerGroup,
-                        maximumCartValue: cartLimit,
+                        maximumCartValue: cartLimits,
                         maxSamples: samplesLimit,
                         productRules: productLimits,
                       },

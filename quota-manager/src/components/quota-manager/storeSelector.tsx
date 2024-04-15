@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import SelectInput from '@commercetools-uikit/select-input';
 import useStores from '../../hooks/useStores';
 import Text from '@commercetools-uikit/text';
+import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 
 interface StoreSelectorProps {
   setSelection: any;
@@ -15,6 +16,8 @@ const StoreSelector: React.FC<StoreSelectorProps> = ({
 }) => {
   const [stores, setStores] = useState<any>([]);
 
+  const applicationContext = useApplicationContext();
+
   const { getStores } = useStores();
 
   useEffect(() => {
@@ -25,7 +28,14 @@ const StoreSelector: React.FC<StoreSelectorProps> = ({
         result.results.map((stResult: any) => {
           setStores((stores: any) => [
             ...stores,
-            { value: stResult, label: stResult.name['en-US'] },
+            {
+              value: stResult,
+              label:
+                stResult.name[
+                  applicationContext.dataLocale ||
+                    applicationContext.project.languages[0]
+                ],
+            },
           ]);
         });
       } catch (error) {}
