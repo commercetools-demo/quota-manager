@@ -12,7 +12,7 @@ const userAgent = createHttpUserAgent({
   contactEmail: 'support@my-company.com',
 });
 
-const useCustomObjects = (): any => {
+const useCustomObjects = (projectKey: string): any => {
   const getCustomObjectsByStore = async (
     container: any,
     key: any,
@@ -21,7 +21,7 @@ const useCustomObjects = (): any => {
     const data = await executeHttpClientRequest(
       async (options) => {
         const res = await axios(
-          buildApiUrl(`/chanel-rfp-042024/custom-objects/${container}/${key}`),
+          buildApiUrl(`/${projectKey}/custom-objects/${container}/${key}`),
           {
             ...config,
             headers: options.headers,
@@ -48,7 +48,7 @@ const useCustomObjects = (): any => {
       const data = await executeHttpClientRequest(
         async (options) => {
           const res = await axios(
-            buildApiUrl('/chanel-rfp-042024/custom-objects'),
+            buildApiUrl(`/${projectKey}/custom-objects`),
             {
               ...config,
               method: 'post',
@@ -83,7 +83,7 @@ const useCustomObjects = (): any => {
     const data = await executeHttpClientRequest(
       async (options) => {
         const res = await axios(
-          buildApiUrl(`/chanel-rfp-042024/custom-objects/${container}/${key}`),
+          buildApiUrl(`/${projectKey}/custom-objects/${container}/${key}`),
           {
             ...config,
             method: 'delete',

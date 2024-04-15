@@ -18,7 +18,7 @@ const StoreSelector: React.FC<StoreSelectorProps> = ({
 
   const applicationContext = useApplicationContext();
 
-  const { getStores } = useStores();
+  const { getStores } = useStores(applicationContext!.project!.key);
 
   useEffect(() => {
     async function retrieveStores() {
@@ -33,7 +33,7 @@ const StoreSelector: React.FC<StoreSelectorProps> = ({
               label:
                 stResult.name[
                   applicationContext.dataLocale ||
-                    applicationContext.project.languages[0]
+                    applicationContext!.project!.languages[0]
                 ],
             },
           ]);

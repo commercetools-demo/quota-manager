@@ -12,11 +12,11 @@ const userAgent = createHttpUserAgent({
   contactEmail: 'support@my-company.com',
 });
 
-const useStores = (): any => {
+const useStores = (projectKey: string): any => {
   const getStores = async (config = { headers: {} }) => {
     const data = await executeHttpClientRequest(
       async (options) => {
-        const res = await axios(buildApiUrl('/chanel-rfp-042024/stores'), {
+        const res = await axios(buildApiUrl(`/${projectKey}/stores`), {
           ...config,
           headers: options.headers,
           withCredentials: options.credentials === 'include',

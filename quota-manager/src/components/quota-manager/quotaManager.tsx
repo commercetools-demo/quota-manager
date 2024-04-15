@@ -22,12 +22,14 @@ import {
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 
 const QuotaManager: React.FC = () => {
-  const { getCategories } = useCategories();
+  const applicationContext = useApplicationContext();
+
+  const { getCategories } = useCategories(applicationContext!.project!.key);
   const {
     createCustomObject,
     getCustomObjectsByStore,
     deleteCustomObjectsByStore,
-  } = useCustomObjects();
+  } = useCustomObjects(applicationContext!.project!.key);
 
   const [categories, setCategories] = useState<any[]>([]);
 
@@ -72,7 +74,6 @@ const QuotaManager: React.FC = () => {
   const [selectedTotalValue, setSelectedTotalValue] =
     useState<any>(moneyInitialValue);
   const showNotification = useShowNotification();
-  const applicationContext = useApplicationContext();
   const clearRules = () => {
     setcartLimits([]);
     setSamplesLimit('');
