@@ -450,7 +450,7 @@ const QuotaManager: React.FC = () => {
                       <p key={cartLimit.index}>
                         The maximum total value for the whole cart is{' '}
                         <b>
-                          {(cartLimit.centAmount / 10000).toLocaleString(
+                          {(cartLimit.centAmount / 100).toLocaleString(
                             undefined,
                             {
                               style: 'currency',
