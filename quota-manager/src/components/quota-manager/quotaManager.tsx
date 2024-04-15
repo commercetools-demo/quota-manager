@@ -493,7 +493,7 @@ const QuotaManager: React.FC = () => {
                           rule.value
                         ) : (
                           <b>
-                            {(rule.value.centAmount / 10000).toLocaleString(
+                            {(rule.value.centAmount / 100).toLocaleString(
                               undefined,
                               {
                                 style: 'currency',
