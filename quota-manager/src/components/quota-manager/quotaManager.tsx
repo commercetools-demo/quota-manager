@@ -174,11 +174,28 @@ const QuotaManager: React.FC = () => {
   };
 
   const clearSelectedRules = () => {
-    const finalArray = productLimits.filter(
+    const productLimitsToDelete = productLimits.filter(
       (element) => !removeList.includes(element)
     );
-    setProductLimits(finalArray);
+
+    const cartLimitsToDelete = cartLimits.filter(
+      (element) => !removeList.includes(element)
+    );
+
+    const currenciesToDelete = cartLimitsToDelete.filter(
+      (element) => !removeList.includes(element.currencyCode)
+    );
+
+    const newConfiguredCurrencies = currenciesToDelete.map((currency) => {
+      return currency.currencyCode;
+    });
+
+    setProductLimits(productLimitsToDelete);
+    setcartLimits(cartLimitsToDelete);
+    setCartLimitsCurrenciesConfigured(newConfiguredCurrencies);
+
     setRemoveList([]);
+    console.log(cartLimitsCurrenciesConfigured);
   };
 
   return (
@@ -433,31 +450,37 @@ const QuotaManager: React.FC = () => {
             <div className="mt-5">
               {cartLimits.length > 0 ? (
                 <>
-                  {cartLimits.map((cartLimit) => {
-                    return (
-                      <p key={cartLimit.index}>
-                        The maximum total value for the whole cart is{' '}
-                        <b>
-                          {(cartLimit.centAmount / 100).toLocaleString(
-                            undefined,
-                            {
-                              style: 'currency',
-                              currency: cartLimit.currencyCode,
-                            }
-                          )}
-                        </b>
-                      </p>
-                    );
-                  })}
+                  {cartLimits.map((cartLimit) => (
+                    <>
+                      <CheckboxInput
+                        key={cartLimit.index}
+                        onChange={() => handleDeletionList(cartLimit)}
+                        isChecked={removeList.indexOf(cartLimit) !== -1}
+                      >
+                        <p key={cartLimit.index}>
+                          The maximum total value for the whole cart is{' '}
+                          <b>
+                            {(cartLimit.centAmount / 100).toLocaleString(
+                              undefined,
+                              {
+                                style: 'currency',
+                                currency: cartLimit.currencyCode,
+                              }
+                            )}
+                          </b>
+                        </p>
+                      </CheckboxInput>
+                    </>
+                  ))}
                 </>
               ) : null}
-
+              {/**
               {samplesLimit !== '' ? (
                 <p>
                   The maximum quantity of sample Items on cart is{' '}
                   <b>{samplesLimit}</b>
                 </p>
-              ) : null}
+              ) : null} */}
               {productLimits.map((rule: any) => (
                 <>
                   <CheckboxInput
