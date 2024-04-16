@@ -20,6 +20,7 @@ import {
   NOTIFICATION_KINDS_PAGE,
 } from '@commercetools-frontend/constants';
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
+import CustomerGroupsSelection from './customerGroupSelection';
 
 const QuotaManager: React.FC = () => {
   const applicationContext = useApplicationContext();
@@ -34,25 +35,24 @@ const QuotaManager: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
-    async function retrieveCategories() {
+    async function retrieveConfiguration() {
       try {
         const result = await getCategories();
 
-        result.results.map((category: any) => {
+        result.results.forEach((category: any) => {
           setCategories((categories: any) => [
             ...categories,
             { value: category, label: category.name['en-US'] },
           ]);
         });
-      } catch (error) {
-        //console.log(error);
-      }
+      } catch (error) {}
     }
-    retrieveCategories();
+    retrieveConfiguration();
   }, []);
 
   const moneyInitialValue = { amount: '', currencyCode: '' };
   const [stSelection, setStSelection] = useState<any>();
+  const [cgSelection, setCgSeletion] = useState<any>();
   const [cartLimits, setcartLimits] = useState<any[]>([]);
   const [samplesLimit, setSamplesLimit] = useState<any>('');
   const [selectedCategory, setSelectedCategory] = useState<any>();
@@ -62,7 +62,6 @@ const QuotaManager: React.FC = () => {
   const [sku, setSku] = useState<any>();
   const [type, setType] = useState<any>('');
   const [customerGroup, setCustomerGroup] = useState<any>();
-  const [isEmployee, setIsEmployee] = useState<boolean>(true);
   const [removeList, setRemoveList] = useState<any[]>([]);
   const [thereIsQuotaConfigured, setThereIsQuotaConfigured] =
     useState<boolean>(false);
@@ -89,16 +88,15 @@ const QuotaManager: React.FC = () => {
 
   const clearAll = () => {
     clearRules();
+    setCgSeletion('');
     setStSelection('');
   };
 
   useMemo(() => {
-    async function retrieveCategories() {
-      let objectKey = 'general-cart-rules';
+    async function retrieveConfiguration() {
       try {
-        if (isEmployee) {
-          objectKey = 'employee-cart-rules';
-        }
+        const objectKey = `${cgSelection.key}-cart-rules`;
+
         const result = await getCustomObjectsByStore(
           objectKey,
           stSelection?.key
@@ -108,8 +106,7 @@ const QuotaManager: React.FC = () => {
         }
         if (result.value.maximumCartValue) {
           setCartLimitsCurrenciesConfigured([]);
-          result.value.maximumCartValue.map((configuredLimit: any) => {
-            console.log(configuredLimit);
+          result.value.maximumCartValue.forEach((configuredLimit: any) => {
             setCartLimitsCurrenciesConfigured(
               (cartLimitsCurrenciesConfigured) => [
                 ...cartLimitsCurrenciesConfigured,
@@ -119,7 +116,6 @@ const QuotaManager: React.FC = () => {
           });
         }
 
-        console.log(cartLimitsCurrenciesConfigured);
         setcartLimits(result.value.maximumCartValue || []);
         setSamplesLimit(result.value.maxSamples || '');
         setProductLimits(result.value.productRules || '');
@@ -132,8 +128,8 @@ const QuotaManager: React.FC = () => {
       }
     }
 
-    retrieveCategories();
-  }, [stSelection, isEmployee]);
+    retrieveConfiguration();
+  }, [stSelection, cgSelection]);
 
   const handleAddValueRules = (valueObj: any) => {
     return MoneyInput.convertToMoneyValue(
@@ -143,11 +139,9 @@ const QuotaManager: React.FC = () => {
   };
 
   const handleDeleteConfiguration = async () => {
-    let objectKey = 'general-cart-rules';
     try {
-      if (isEmployee) {
-        objectKey = 'employee-cart-rules';
-      }
+      const objectKey = `${cgSelection.key}-cart-rules`;
+
       deleteCustomObjectsByStore(objectKey, stSelection?.key).then(
         (response: any) => {
           if (response.statusCode) {
@@ -165,9 +159,7 @@ const QuotaManager: React.FC = () => {
           }
         }
       );
-    } catch (error) {
-      //console.log(error);
-    }
+    } catch (error) {}
     setThereIsQuotaConfigured(false);
     clearAll();
   };
@@ -196,20 +188,17 @@ const QuotaManager: React.FC = () => {
           <Text.Headline as="h1">Quota Management Page</Text.Headline>
         </div>
         <StoreSelector setSelection={setStSelection} selection={stSelection} />
-        {stSelection ? (
+        <CustomerGroupsSelection
+          setCustomerSelection={setCgSeletion}
+          customerSelection={cgSelection}
+        />
+        {stSelection && cgSelection ? (
           <div className="pt-5">
             <Text.Headline as="h2">
               Quota configuration for{' '}
-              {stSelection?.name[applicationContext.dataLocale || 'en-US']}
+              {stSelection?.name[applicationContext.dataLocale || 'en-US']} -{' '}
+              {cgSelection.name}
             </Text.Headline>
-            <div className="pt-5">
-              <CheckboxInput
-                onChange={() => setIsEmployee(!isEmployee)}
-                isChecked={isEmployee}
-              >
-                Quota configuration for Employees
-              </CheckboxInput>
-            </div>
             <div>
               <div className="flex items-center mt-5">
                 <Text.Body> Maximum cart total value: </Text.Body>
@@ -265,8 +254,7 @@ const QuotaManager: React.FC = () => {
                   />
                 </div>
               </div>
-
-              <div className="flex items-center mt-5">
+              {/**   <div className="flex items-center mt-5">
                 <Text.Body> Maximum quantity of samples allowed: </Text.Body>
                 <div className="mx-5 w-20">
                   <TextInput
@@ -280,7 +268,7 @@ const QuotaManager: React.FC = () => {
                     }}
                   />
                 </div>
-              </div>
+              </div>*/}
             </div>
             <div className="mt-5">
               <Text.Headline as="h2">Product Limits: </Text.Headline>
@@ -545,11 +533,7 @@ const QuotaManager: React.FC = () => {
                   }
                   onClick={() => {
                     createCustomObject({
-                      container: `${
-                        isEmployee
-                          ? 'employee-cart-rules'
-                          : 'general-cart-rules'
-                      }`,
+                      container: `${cgSelection?.key}-cart-rules`,
                       key: stSelection?.key,
                       value: {
                         customerGroup: customerGroup,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const exportErrors = () => {
   const createErrorsJsonFile = ({ failedCreations }: any): any => {
     const errorsJson = JSON.stringify(failedCreations, null, 2);

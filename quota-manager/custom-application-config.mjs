@@ -17,8 +17,13 @@ const config = {
     },
   },
   oAuthScopes: {
-    view: ['view_stores', 'view_key_value_documents', 'view_products'],
-    manage: ['manage_stores', 'manage_key_value_documents', 'manage_products'],
+    view: [
+      'view_stores',
+      'view_key_value_documents',
+      'view_products',
+      'view_customer_groups',
+    ],
+    manage: ['manage_key_value_documents'],
   },
   icon: '${path:@commercetools-frontend/assets/application-icons/files.svg}',
   mainMenuLink: {

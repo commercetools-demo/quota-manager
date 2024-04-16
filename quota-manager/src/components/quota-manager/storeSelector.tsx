@@ -25,7 +25,7 @@ const StoreSelector: React.FC<StoreSelectorProps> = ({
       try {
         const result = await getStores();
 
-        result.results.map((stResult: any) => {
+        result.results.forEach((stResult: any) => {
           setStores((stores: any) => [
             ...stores,
             {

@@ -28,7 +28,7 @@ const useCustomObjects = (projectKey: string): any => {
             withCredentials: options.credentials === 'include',
           }
         );
-        console.log(res.data);
+
         return {
           data: res.data,
           statusCode: res.status,
@@ -68,8 +68,6 @@ const useCustomObjects = (projectKey: string): any => {
       );
       return data;
     } catch (error) {
-      //@ts-ignore
-      //console.log(error?.response?.data);
       //@ts-ignore
       return error?.response?.data;
     }
