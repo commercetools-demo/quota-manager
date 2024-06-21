@@ -21,6 +21,7 @@ import {
 } from '@commercetools-frontend/constants';
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 import CustomerGroupsSelection from './customerGroupSelection';
+import Spacings from '@commercetools-uikit/spacings';
 
 const QuotaManager: React.FC = () => {
   const applicationContext = useApplicationContext();
@@ -204,11 +205,16 @@ const QuotaManager: React.FC = () => {
         <div className="pb-5">
           <Text.Headline as="h1">Quota Management Page</Text.Headline>
         </div>
-        <StoreSelector setSelection={setStSelection} selection={stSelection} />
-        <CustomerGroupsSelection
-          setCustomerSelection={setCgSeletion}
-          customerSelection={cgSelection}
-        />
+        <Spacings.Stack scale={'s'}>
+          <StoreSelector
+            setSelection={setStSelection}
+            selection={stSelection}
+          />
+          <CustomerGroupsSelection
+            setCustomerSelection={setCgSeletion}
+            customerSelection={cgSelection}
+          />
+        </Spacings.Stack>
         {stSelection && cgSelection ? (
           <div className="pt-5">
             <Text.Headline as="h2">
