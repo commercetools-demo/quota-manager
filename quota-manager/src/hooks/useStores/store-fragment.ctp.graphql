@@ -1,0 +1,12 @@
+fragment StoreFragment on Store {
+    id
+    key
+    version
+    createdAt
+    lastModifiedAt
+    name(locale: $locale)
+    nameAllLocales {
+        locale
+        value
+    }
+}
