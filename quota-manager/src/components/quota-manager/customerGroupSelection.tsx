@@ -1,50 +1,43 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from 'react';
 import SelectInput from '@commercetools-uikit/select-input';
-import useCustomerGroups from '../../hooks/useCustomerGroups';
 import Text from '@commercetools-uikit/text';
-import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
+import { ContentNotification } from '@commercetools-uikit/notifications';
+import { getErrorMessage } from '../../helpers';
+import Spacings from '@commercetools-uikit/spacings';
+import LoadingSpinner from '@commercetools-uikit/loading-spinner';
+import { PageNotFound } from '@commercetools-frontend/application-components';
+import { useCustomerGroupsFetcher } from '../../hooks/useCustomerGroup';
 
 interface CustomerGroupsSelectionProps {
-  setCustomerSelection: any;
-  customerSelection: any;
+  setCustomerSelection: (group: string) => void;
+  customerSelection: string;
 }
 
 const CustomerGroupsSelection: React.FC<CustomerGroupsSelectionProps> = ({
   setCustomerSelection,
   customerSelection,
 }) => {
-  const [customerGroups, setCustomerGroups] = useState<any>([
-    {
-      value: { key: 'general', name: 'All Customers' },
-      label: 'All Customers',
-    },
-  ]);
+  const { customerGroups, error, loading } = useCustomerGroupsFetcher({
+    limit: 100,
+    offset: 0,
+  });
 
-  const applicationContext = useApplicationContext();
-
-  const { getCustomerGroups } = useCustomerGroups(
-    applicationContext!.project!.key
-  );
-
-  useEffect(() => {
-    async function retrieveCustomerGroups() {
-      try {
-        const result = await getCustomerGroups();
-
-        result.results.forEach((cgResult: any) => {
-          setCustomerGroups((customerGroups: any) => [
-            ...customerGroups,
-            {
-              value: { key: cgResult.key, name: cgResult.name },
-              label: cgResult.name,
-            },
-          ]);
-        });
-      } catch (error) {}
-    }
-    retrieveCustomerGroups();
-  }, []);
+  if (error) {
+    return (
+      <ContentNotification type="error">
+        <Text.Body>{getErrorMessage(error)}</Text.Body>
+      </ContentNotification>
+    );
+  }
+  if (loading) {
+    return (
+      <Spacings.Stack alignItems="center">
+        <LoadingSpinner />
+      </Spacings.Stack>
+    );
+  }
+  if (!customerGroups || customerGroups.count < 1) {
+    return <PageNotFound />;
+  }
 
   return (
     <>
@@ -54,10 +47,17 @@ const CustomerGroupsSelection: React.FC<CustomerGroupsSelectionProps> = ({
             <Text.Headline as="h2">Select a Customer Group: </Text.Headline>
           </div>
           <SelectInput
+            isClearable={true}
+            placeholder={'All Customers'}
             value={customerSelection}
-            options={customerGroups}
+            options={customerGroups.results.map((group) => {
+              return {
+                value: group.id,
+                label: group.name,
+              };
+            })}
             onChange={(event) => {
-              setCustomerSelection(event?.target.value);
+              setCustomerSelection(event?.target.value as string);
             }}
           ></SelectInput>
         </>

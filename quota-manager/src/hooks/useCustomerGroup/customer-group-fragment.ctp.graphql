@@ -1,0 +1,8 @@
+fragment CustomerGroupFragment on CustomerGroup {
+    id
+    key
+    version
+    createdAt
+    lastModifiedAt
+    name
+}
