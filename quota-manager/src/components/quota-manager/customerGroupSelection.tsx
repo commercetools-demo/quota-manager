@@ -1,4 +1,3 @@
-import SelectInput from '@commercetools-uikit/select-input';
 import Text from '@commercetools-uikit/text';
 import { ContentNotification } from '@commercetools-uikit/notifications';
 import { getErrorMessage } from '../../helpers';
@@ -6,6 +5,7 @@ import Spacings from '@commercetools-uikit/spacings';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 import { PageNotFound } from '@commercetools-frontend/application-components';
 import { useCustomerGroupsFetcher } from '../../hooks/useCustomerGroup';
+import SelectField from '@commercetools-uikit/select-field';
 
 interface CustomerGroupsSelectionProps {
   setCustomerSelection: (group: string) => void;
@@ -40,29 +40,21 @@ const CustomerGroupsSelection: React.FC<CustomerGroupsSelectionProps> = ({
   }
 
   return (
-    <>
-      {customerGroups ? (
-        <>
-          <div className=" py-5">
-            <Text.Headline as="h2">Select a Customer Group: </Text.Headline>
-          </div>
-          <SelectInput
-            isClearable={true}
-            placeholder={'All Customers'}
-            value={customerSelection}
-            options={customerGroups.results.map((group) => {
-              return {
-                value: group.id,
-                label: group.name,
-              };
-            })}
-            onChange={(event) => {
-              setCustomerSelection(event?.target.value as string);
-            }}
-          ></SelectInput>
-        </>
-      ) : null}
-    </>
+    <SelectField
+      title="Select a Customer Group:"
+      isClearable={true}
+      placeholder={'All Customers'}
+      value={customerSelection}
+      options={customerGroups.results.map((group) => {
+        return {
+          value: group.id,
+          label: group.name,
+        };
+      })}
+      onChange={(event) => {
+        setCustomerSelection(event?.target.value as string);
+      }}
+    />
   );
 };
 

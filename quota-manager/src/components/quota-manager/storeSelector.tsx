@@ -1,4 +1,3 @@
-import SelectInput from '@commercetools-uikit/select-input';
 import Text from '@commercetools-uikit/text';
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 import { useStoresFetcher } from '../../hooks/useStores';
@@ -11,6 +10,7 @@ import {
   formatLocalizedString,
   transformLocalizedFieldToLocalizedString,
 } from '@commercetools-frontend/l10n';
+import SelectField from '@commercetools-uikit/select-field';
 
 interface StoreSelectorProps {
   setSelection: (id: string) => void;
@@ -51,33 +51,31 @@ const StoreSelector: React.FC<StoreSelectorProps> = ({
   }
 
   return (
-    <Spacings.Stack scale={'l'}>
-      <Text.Headline as="h2">Select a Store: </Text.Headline>
-      <SelectInput
-        value={selection}
-        options={stores.results.map((store) => {
-          return {
-            value: store.id,
-            label: formatLocalizedString(
-              {
-                name: transformLocalizedFieldToLocalizedString(
-                  store.nameAllLocales ?? []
-                ),
-              },
-              {
-                key: 'name',
-                locale: dataLocale,
-                fallback: store.key,
-                fallbackOrder: projectLanguages,
-              }
-            ),
-          };
-        })}
-        onChange={(event) => {
-          setSelection(event?.target.value as string);
-        }}
-      ></SelectInput>
-    </Spacings.Stack>
+    <SelectField
+      title="Select a Store:"
+      value={selection}
+      options={stores.results.map((store) => {
+        return {
+          value: store.id,
+          label: formatLocalizedString(
+            {
+              name: transformLocalizedFieldToLocalizedString(
+                store.nameAllLocales ?? []
+              ),
+            },
+            {
+              key: 'name',
+              locale: dataLocale,
+              fallback: store.key,
+              fallbackOrder: projectLanguages,
+            }
+          ),
+        };
+      })}
+      onChange={(event) => {
+        setSelection(event?.target.value as string);
+      }}
+    />
   );
 };
 
