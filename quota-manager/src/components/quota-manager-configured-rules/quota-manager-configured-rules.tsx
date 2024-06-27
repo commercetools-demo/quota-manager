@@ -5,7 +5,7 @@ import SecondaryButton from '@commercetools-uikit/secondary-button';
 import PrimaryButton from '@commercetools-uikit/primary-button';
 
 import { useFormikContext } from 'formik';
-import { Config } from '../quota-manager-list/quota-manager-list';
+import { Config } from '../quota-manager/validation';
 import { useIntl } from 'react-intl';
 import { formatMoney } from '../../helpers';
 import Spacings from '@commercetools-uikit/spacings';

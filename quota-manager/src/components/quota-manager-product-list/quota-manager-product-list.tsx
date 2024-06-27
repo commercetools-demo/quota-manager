@@ -16,7 +16,7 @@ import { ProductValue } from '../product-search-input/product-search-input';
 import NumberInput from '@commercetools-uikit/number-input';
 import { TValue } from '@commercetools-uikit/money-input/dist/declarations/src/money-input';
 import PrimaryButton from '@commercetools-uikit/primary-button';
-import { Config } from '../quota-manager-list/quota-manager-list';
+import { Config } from '../quota-manager/validation';
 
 type Props = {};
 
