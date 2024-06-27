@@ -62,6 +62,7 @@ export const useCustomObjectFetcher: TUseCustomObjectFetcher = (
     TQuery_CustomObjectArgs
   >(GetCustomObject, {
     variables: variables,
+    skip: (!variables.key || !variables.container) && !variables.id,
     context: {
       target: GRAPHQL_TARGETS.COMMERCETOOLS_PLATFORM,
     },

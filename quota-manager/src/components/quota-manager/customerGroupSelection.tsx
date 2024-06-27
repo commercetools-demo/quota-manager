@@ -6,15 +6,16 @@ import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 import { PageNotFound } from '@commercetools-frontend/application-components';
 import { useCustomerGroupsFetcher } from '../../hooks/useCustomerGroups';
 import SelectField from '@commercetools-uikit/select-field';
+import { Query } from './quotaManager';
 
 interface CustomerGroupsSelectionProps {
-  setCustomerSelection: (group: string) => void;
-  customerSelection: string | undefined;
+  updateFilters: (query: Query) => void;
+  filters: Query;
 }
 
 const CustomerGroupsSelection: React.FC<CustomerGroupsSelectionProps> = ({
-  setCustomerSelection,
-  customerSelection,
+  filters,
+  updateFilters,
 }) => {
   const { customerGroups, error, loading } = useCustomerGroupsFetcher({
     limit: 100,
@@ -30,8 +31,8 @@ const CustomerGroupsSelection: React.FC<CustomerGroupsSelectionProps> = ({
   }
   if (loading) {
     return (
-      <Spacings.Stack alignItems="center">
-        <LoadingSpinner />
+      <Spacings.Stack alignItems="center" scale={'m'}>
+        <LoadingSpinner scale={'l'} />
       </Spacings.Stack>
     );
   }
@@ -50,7 +51,7 @@ const CustomerGroupsSelection: React.FC<CustomerGroupsSelectionProps> = ({
     <SelectField
       title="Select a Customer Group:"
       isClearable={true}
-      value={customerSelection}
+      value={filters.customergroup}
       options={options.concat(
         customerGroups.results.map((group) => {
           return {
@@ -60,7 +61,7 @@ const CustomerGroupsSelection: React.FC<CustomerGroupsSelectionProps> = ({
         })
       )}
       onChange={(event) => {
-        setCustomerSelection(event?.target.value as string);
+        updateFilters({ customergroup: event?.target.value as string });
       }}
     />
   );

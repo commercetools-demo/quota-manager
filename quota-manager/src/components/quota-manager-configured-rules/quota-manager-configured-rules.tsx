@@ -9,13 +9,11 @@ import { Config } from '../quota-manager-list/quota-manager-list';
 import { useIntl } from 'react-intl';
 import { formatMoney } from '../../helpers';
 import Spacings from '@commercetools-uikit/spacings';
-import { ApolloQueryResult } from '@apollo/client';
-import { TQuery } from '../../types/generated/ctp';
 import MoneyInput from '@commercetools-uikit/money-input';
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 
 type Props = {
-  afterSubmit: () => Promise<ApolloQueryResult<TQuery>>;
+  afterSubmit: () => Promise<unknown>;
   handleDeleteConfiguration: () => Promise<void>;
 };
 

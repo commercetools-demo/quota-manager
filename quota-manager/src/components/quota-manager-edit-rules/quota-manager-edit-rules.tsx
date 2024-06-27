@@ -1,10 +1,13 @@
 import { FC } from 'react';
 import { FormModalPage } from '@commercetools-frontend/application-components';
-import Text from '@commercetools-uikit/text';
 import QuotaManagerMaxCart from '../quota-manager-max-cart/quota-manager-max-cart';
 import QuotaManagerProductList from '../quota-manager-product-list/quota-manager-product-list';
 
-type Props = { onClose: () => void; storeId: string; customerGroupId: string };
+type Props = {
+  onClose: () => Promise<void>;
+  storeId?: string;
+  customerGroupId?: string;
+};
 
 export const QuotaManagerEditRules: FC<Props> = ({
   onClose,
@@ -13,15 +16,13 @@ export const QuotaManagerEditRules: FC<Props> = ({
 }) => {
   return (
     <FormModalPage
-      title={'Edit rules for'}
+      title={`Edit rules for ${storeId} - ${customerGroupId}`}
       isOpen
       onPrimaryButtonClick={() => console.log('Primary')}
       onSecondaryButtonClick={onClose}
       labelSecondaryButton={'Close'}
+      onClose={onClose}
     >
-      <Text.Headline as="h2">
-        Add new rules for {storeId} - {customerGroupId}
-      </Text.Headline>
       <QuotaManagerMaxCart />
       <QuotaManagerProductList />
     </FormModalPage>

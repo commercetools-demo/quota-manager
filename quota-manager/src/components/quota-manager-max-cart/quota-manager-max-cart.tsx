@@ -8,6 +8,7 @@ import { Config } from '../quota-manager-list/quota-manager-list';
 import Grid from '@commercetools-uikit/grid';
 import MoneyField from '@commercetools-uikit/money-field';
 import { TMoneyFieldProps } from '@commercetools-uikit/money-field/dist/declarations/src/money-field';
+import Spacings from '@commercetools-uikit/spacings';
 
 type Props = {};
 
@@ -35,55 +36,58 @@ export const QuotaManagerMaxCart: FC<Props> = () => {
     onSubmit: () => {},
   });
   return (
-    <Grid
-      gridGap="16px"
-      gridAutoColumns="1fr"
-      gridTemplateColumns="repeat(3, 1fr)"
-      alignItems={'center'}
-    >
-      <Text.Body> Maximum cart total value: </Text.Body>
-      <MoneyField
-        title={''}
-        name={'moneyInput'}
-        value={formik.values.moneyInput}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        currencies={filteredCurrencies}
-      />
-      <PrimaryButton
-        label={`Add total for ${formik.values.moneyInput.currencyCode} currency`}
-        type="button"
-        size="big"
-        isDisabled={
-          !formik.dirty ||
-          !formik.values.moneyInput.currencyCode ||
-          !formik.values.moneyInput.amount
-        }
-        onClick={async () => {
-          let convertToMoneyValue = MoneyInput.convertToMoneyValue(
-            // @ts-ignore
-            { ...formik.values.moneyInput },
-            dataLocale
-          );
-          if (convertToMoneyValue) {
-            convertToMoneyValue = {
-              ...convertToMoneyValue,
-              centAmount: convertToMoneyValue.centAmount / 100,
-            };
-            setFieldValue('cartLimits', [
-              ...(values.cartLimits || []),
-              convertToMoneyValue,
-            ]);
-            setFieldValue('cartLimitsCurrenciesConfigured', [
-              ...(values.cartLimitsCurrenciesConfigured || []),
-              convertToMoneyValue.currencyCode,
-            ]);
-
-            await submitForm();
+    <Spacings.Stack scale={'m'}>
+      <Text.Headline as="h2">Cart Limits: </Text.Headline>
+      <Grid
+        gridGap="16px"
+        gridAutoColumns="1fr"
+        gridTemplateColumns="repeat(3, 1fr)"
+        alignItems={'center'}
+      >
+        <Text.Body> Maximum cart total value: </Text.Body>
+        <MoneyField
+          title={''}
+          name={'moneyInput'}
+          value={formik.values.moneyInput}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          currencies={filteredCurrencies}
+        />
+        <PrimaryButton
+          label={`Add total for ${formik.values.moneyInput.currencyCode} currency`}
+          type="button"
+          size="big"
+          isDisabled={
+            !formik.dirty ||
+            !formik.values.moneyInput.currencyCode ||
+            !formik.values.moneyInput.amount
           }
-        }}
-      />
-    </Grid>
+          onClick={async () => {
+            let convertToMoneyValue = MoneyInput.convertToMoneyValue(
+              // @ts-ignore
+              { ...formik.values.moneyInput },
+              dataLocale
+            );
+            if (convertToMoneyValue) {
+              convertToMoneyValue = {
+                ...convertToMoneyValue,
+                centAmount: convertToMoneyValue.centAmount / 100,
+              };
+              setFieldValue('cartLimits', [
+                ...(values.cartLimits || []),
+                convertToMoneyValue,
+              ]);
+              setFieldValue('cartLimitsCurrenciesConfigured', [
+                ...(values.cartLimitsCurrenciesConfigured || []),
+                convertToMoneyValue.currencyCode,
+              ]);
+
+              await submitForm();
+            }
+          }}
+        />
+      </Grid>
+    </Spacings.Stack>
   );
 };
 

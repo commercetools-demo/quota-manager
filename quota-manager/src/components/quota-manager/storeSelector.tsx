@@ -1,3 +1,4 @@
+import { FC } from 'react';
 import Text from '@commercetools-uikit/text';
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 import { useStoresFetcher } from '../../hooks/useStores';
@@ -11,16 +12,14 @@ import {
   transformLocalizedFieldToLocalizedString,
 } from '@commercetools-frontend/l10n';
 import SelectField from '@commercetools-uikit/select-field';
+import { Query } from './quotaManager';
 
 interface StoreSelectorProps {
-  setSelection: (value: string) => void;
-  selection: string | undefined;
+  updateFilters: (query: Query) => void;
+  filters: Query;
 }
 
-const StoreSelector: React.FC<StoreSelectorProps> = ({
-  setSelection,
-  selection,
-}) => {
+const StoreSelector: FC<StoreSelectorProps> = ({ filters, updateFilters }) => {
   const { dataLocale, projectLanguages } = useApplicationContext((context) => ({
     dataLocale: context.dataLocale ?? '',
     projectLanguages: context.project?.languages ?? [],
@@ -41,8 +40,8 @@ const StoreSelector: React.FC<StoreSelectorProps> = ({
   }
   if (loading) {
     return (
-      <Spacings.Stack alignItems="center">
-        <LoadingSpinner />
+      <Spacings.Stack alignItems="center" scale={'m'}>
+        <LoadingSpinner scale={'l'} />
       </Spacings.Stack>
     );
   }
@@ -53,7 +52,7 @@ const StoreSelector: React.FC<StoreSelectorProps> = ({
   return (
     <SelectField
       title="Select a Store:"
-      value={selection}
+      value={filters.store}
       options={stores.results.map((store) => {
         return {
           value: store.key,
@@ -73,7 +72,7 @@ const StoreSelector: React.FC<StoreSelectorProps> = ({
         };
       })}
       onChange={(event) => {
-        setSelection(event?.target.value as string);
+        updateFilters({ store: event?.target.value as string });
       }}
     />
   );
