@@ -233,7 +233,7 @@ const ProductSearchInput: FC<ProductSearchInputProps> = ({
   return (
     <AsyncSelectInput
       name={name}
-      value={{ ...value }}
+      value={value && { ...value }}
       placeholder={placeholder}
       isClearable
       isSearchable
