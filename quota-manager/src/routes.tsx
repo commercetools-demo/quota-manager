@@ -6,7 +6,6 @@ type ApplicationRoutesProps = {
 };
 const ApplicationRoutes = (_props: ApplicationRoutesProps) => {
   const match = useRouteMatch();
-  console.log(match.url);
   return (
     <Switch>
       <Route path={`${match.path}/:customerGroup?/:store?`}>
