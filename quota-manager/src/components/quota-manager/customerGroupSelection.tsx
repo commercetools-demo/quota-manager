@@ -4,12 +4,12 @@ import { getErrorMessage } from '../../helpers';
 import Spacings from '@commercetools-uikit/spacings';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 import { PageNotFound } from '@commercetools-frontend/application-components';
-import { useCustomerGroupsFetcher } from '../../hooks/useCustomerGroup';
+import { useCustomerGroupsFetcher } from '../../hooks/useCustomerGroups';
 import SelectField from '@commercetools-uikit/select-field';
 
 interface CustomerGroupsSelectionProps {
   setCustomerSelection: (group: string) => void;
-  customerSelection: string;
+  customerSelection: string | undefined;
 }
 
 const CustomerGroupsSelection: React.FC<CustomerGroupsSelectionProps> = ({
@@ -39,18 +39,26 @@ const CustomerGroupsSelection: React.FC<CustomerGroupsSelectionProps> = ({
     return <PageNotFound />;
   }
 
+  const options = [
+    {
+      value: 'general',
+      label: 'All Customers',
+    },
+  ];
+
   return (
     <SelectField
       title="Select a Customer Group:"
       isClearable={true}
-      placeholder={'All Customers'}
       value={customerSelection}
-      options={customerGroups.results.map((group) => {
-        return {
-          value: group.id,
-          label: group.name,
-        };
-      })}
+      options={options.concat(
+        customerGroups.results.map((group) => {
+          return {
+            value: group.key || group.id,
+            label: group.name,
+          };
+        })
+      )}
       onChange={(event) => {
         setCustomerSelection(event?.target.value as string);
       }}

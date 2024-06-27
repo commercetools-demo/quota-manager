@@ -13,8 +13,8 @@ import {
 import SelectField from '@commercetools-uikit/select-field';
 
 interface StoreSelectorProps {
-  setSelection: (id: string) => void;
-  selection: string;
+  setSelection: (value: string) => void;
+  selection: string | undefined;
 }
 
 const StoreSelector: React.FC<StoreSelectorProps> = ({
@@ -56,7 +56,7 @@ const StoreSelector: React.FC<StoreSelectorProps> = ({
       value={selection}
       options={stores.results.map((store) => {
         return {
-          value: store.id,
+          value: store.key,
           label: formatLocalizedString(
             {
               name: transformLocalizedFieldToLocalizedString(
