@@ -54,16 +54,6 @@ export const QuotaManagerConfiguredRules: FC<Props> = ({
     await afterSubmit();
   };
 
-  const clearRules = async () => {
-    setFieldValue('productRules', []);
-    setFieldValue('cartLimits', []);
-    setFieldValue('cartLimitsCurrenciesConfigured', []);
-
-    setRemoveList([]);
-    await submitForm();
-    await afterSubmit();
-  };
-
   const handleDeletionList = (rule: any) => {
     const itemIndex = removeList.indexOf(rule);
     if (itemIndex === -1) {
@@ -142,18 +132,6 @@ export const QuotaManagerConfiguredRules: FC<Props> = ({
 
         <Spacings.Inline>
           <SecondaryButton
-            label="Clear All Rules"
-            type="button"
-            size="big"
-            isDisabled={
-              (values.cartLimits && values.cartLimits.length <= 0) ||
-              (values.productRules && values.productRules.length <= 0)
-            }
-            onClick={async () => {
-              await clearRules();
-            }}
-          />
-          <SecondaryButton
             label="Clear Selected Rules"
             type="button"
             size="big"
@@ -163,7 +141,7 @@ export const QuotaManagerConfiguredRules: FC<Props> = ({
             }}
           />
           <PrimaryButton
-            label="Delete Quota Configuration "
+            label="Clear All Rules"
             type="button"
             size="big"
             onClick={async () => {

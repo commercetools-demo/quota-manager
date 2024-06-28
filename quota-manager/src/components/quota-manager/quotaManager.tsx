@@ -87,7 +87,7 @@ const QuotaManager: FC<Props> = ({ baseUrl }) => {
   const customObjectDeleter = useCustomObjectDeleter();
 
   const handleDeleteConfiguration = async () => {
-    customObjectDeleter.execute({
+    await customObjectDeleter.execute({
       id: customObject?.id,
       version: customObject?.version,
       onCompleted: () => {
@@ -104,6 +104,7 @@ const QuotaManager: FC<Props> = ({ baseUrl }) => {
           text: message,
         }),
     });
+    await refetch();
   };
 
   const handleSubmit = (values: Config) => {

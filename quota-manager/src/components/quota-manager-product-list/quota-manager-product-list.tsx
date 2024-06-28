@@ -53,6 +53,7 @@ export const QuotaManagerProductList: FC<Props> = ({}) => {
         { ...formValues },
       ]);
       await submitForm();
+      formik.resetForm();
     },
   });
 
@@ -119,7 +120,7 @@ export const QuotaManagerProductList: FC<Props> = ({}) => {
 
   return (
     <FormikProvider value={formik}>
-      <Spacings.Stack scale={'m'}>
+      <Spacings.Stack scale={'s'}>
         <Text.Headline as="h2">Product Limits: </Text.Headline>
         <Grid
           gridGap="16px"
@@ -127,19 +128,6 @@ export const QuotaManagerProductList: FC<Props> = ({}) => {
           gridTemplateColumns="repeat(5, 1fr)"
           alignItems={'center'}
         >
-          <Grid.Item>
-            <Text.Body>Type:</Text.Body>
-          </Grid.Item>
-          <Grid.Item>
-            <Text.Body>Equals:</Text.Body>
-          </Grid.Item>
-          <Grid.Item>
-            <Text.Body>Criteria:</Text.Body>
-          </Grid.Item>
-          <Grid.Item>
-            <Text.Body>{'Quantity:'}</Text.Body>
-          </Grid.Item>
-          <Grid.Item></Grid.Item>
           <Grid.Item>
             <SelectInput
               value={formik.values.type}

@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { InfoModalPage } from '@commercetools-frontend/application-components';
 import QuotaManagerMaxCart from '../quota-manager-max-cart/quota-manager-max-cart';
 import QuotaManagerProductList from '../quota-manager-product-list/quota-manager-product-list';
+import Spacings from '@commercetools-uikit/spacings';
 
 type Props = {
   onClose: () => Promise<void>;
@@ -20,8 +21,10 @@ export const QuotaManagerEditRules: FC<Props> = ({
       isOpen
       onClose={onClose}
     >
-      <QuotaManagerMaxCart />
-      <QuotaManagerProductList />
+      <Spacings.Stack scale={'l'}>
+        <QuotaManagerMaxCart />
+        <QuotaManagerProductList />
+      </Spacings.Stack>
     </InfoModalPage>
   );
 };

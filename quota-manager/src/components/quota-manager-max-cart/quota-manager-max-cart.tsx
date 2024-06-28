@@ -37,52 +37,54 @@ export const QuotaManagerMaxCart: FC<Props> = () => {
   });
 
   return (
-    <Spacings.Stack scale={'m'}>
+    <Spacings.Stack scale={'s'}>
       <Text.Headline as="h2">Cart Limits: </Text.Headline>
       {filteredCurrencies.length > 0 ? (
-        <Grid
-          gridGap="16px"
-          gridAutoColumns="1fr"
-          gridTemplateColumns="repeat(3, 1fr)"
-          alignItems={'center'}
-        >
-          <Text.Body> Maximum cart total value: </Text.Body>
-          <MoneyInput
-            name={'moneyInput'}
-            value={formik.values.moneyInput}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            currencies={filteredCurrencies}
-          />
-          <PrimaryButton
-            label={`Add total for ${formik.values.moneyInput.currencyCode} currency`}
-            type="button"
-            size="big"
-            isDisabled={
-              !formik.dirty ||
-              !formik.values.moneyInput.currencyCode ||
-              !formik.values.moneyInput.amount
-            }
-            onClick={async () => {
-              const convertToMoneyValue = MoneyInput.convertToMoneyValue(
-                { ...formik.values.moneyInput },
-                dataLocale
-              );
-              if (convertToMoneyValue) {
-                setFieldValue('cartLimits', [
-                  ...(values.cartLimits || []),
-                  convertToMoneyValue,
-                ]);
-                setFieldValue('cartLimitsCurrenciesConfigured', [
-                  ...(values.cartLimitsCurrenciesConfigured || []),
-                  convertToMoneyValue.currencyCode,
-                ]);
+        <Spacings.Inline alignItems={'center'}>
+          <Grid.Item>
+            <Text.Body> Maximum cart total value: </Text.Body>
+          </Grid.Item>
 
-                await submitForm();
+          <Grid.Item>
+            <MoneyInput
+              name={'moneyInput'}
+              value={formik.values.moneyInput}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              currencies={filteredCurrencies}
+            />
+          </Grid.Item>
+          <Grid.Item>
+            <PrimaryButton
+              label={`Add total for ${formik.values.moneyInput.currencyCode} currency`}
+              type="button"
+              size="big"
+              isDisabled={
+                !formik.dirty ||
+                !formik.values.moneyInput.currencyCode ||
+                !formik.values.moneyInput.amount
               }
-            }}
-          />
-        </Grid>
+              onClick={async () => {
+                const convertToMoneyValue = MoneyInput.convertToMoneyValue(
+                  { ...formik.values.moneyInput },
+                  dataLocale
+                );
+                if (convertToMoneyValue) {
+                  setFieldValue('cartLimits', [
+                    ...(values.cartLimits || []),
+                    convertToMoneyValue,
+                  ]);
+                  setFieldValue('cartLimitsCurrenciesConfigured', [
+                    ...(values.cartLimitsCurrenciesConfigured || []),
+                    convertToMoneyValue.currencyCode,
+                  ]);
+
+                  await submitForm();
+                }
+              }}
+            />
+          </Grid.Item>
+        </Spacings.Inline>
       ) : (
         <Text.Body>
           You have already configured limits for all currencies.

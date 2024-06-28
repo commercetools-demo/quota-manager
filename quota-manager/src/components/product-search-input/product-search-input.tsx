@@ -73,7 +73,7 @@ export const ProductSearchSingleValue: FC<SingleValueProps<ProductValue>> = (
 
   return (
     <AsyncSelectInput.SingleValue {...props}>
-      <Spacings.Inline>
+      <Spacings.Inline alignItems={'center'}>
         {data.product.masterData.staged?.variant?.images && (
           <div>
             <img
@@ -233,7 +233,7 @@ const ProductSearchInput: FC<ProductSearchInputProps> = ({
   return (
     <AsyncSelectInput
       name={name}
-      value={value && { ...value }}
+      value={{ ...value }}
       placeholder={placeholder}
       isClearable
       isSearchable
