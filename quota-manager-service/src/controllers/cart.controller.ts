@@ -12,7 +12,7 @@ import { logger } from '../utils/logger.utils';
 export const cartController = async (action: string, resource: Resource) => {
   switch (action) {
     case 'Update':
-      logger.info('Cart update extension executed', resource);
+      logger.info('Cart update executed', resource);
       return { statusCode: 200 };
       break;
 
