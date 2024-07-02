@@ -274,6 +274,9 @@
     "refusedGifts": [],
     "shipping": [],
     "shippingMode": "Single",
+    "store": {
+      "key": "thedoublef-webstore"
+    },
     "taxCalculationMode": "LineItemLevel",
     "taxMode": "Platform",
     "taxRoundingMode": "HalfEven",

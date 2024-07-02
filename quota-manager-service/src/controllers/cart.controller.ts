@@ -252,10 +252,10 @@ export const cartController = async (action: string, resource: Resource) => {
     case 'Update': {
       logger.info('Cart update executed', resource);
       const cart: Cart = resource.obj;
-      const storeKey = cart.store?.key || '';
+      const storeKey = cart.store?.key;
       const customerId = cart.customerId;
       const lineItems = cart.lineItems;
-      if (storeKey !== '') {
+      if (storeKey) {
         const totalPrice = cart.totalPrice;
 
         const apiRoot = createApiRoot();
@@ -322,7 +322,8 @@ export const cartController = async (action: string, resource: Resource) => {
         }
         const config: Config = response.value;
 
-        const maximumCartValue: Array<CentPrecisionMoney> = [];
+        const maximumCartValue: Array<CentPrecisionMoney> =
+          config.cartLimits || [];
         // const maxSamples = '';
         const productRules = config.productRules || [];
 
