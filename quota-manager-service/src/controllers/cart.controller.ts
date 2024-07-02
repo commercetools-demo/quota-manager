@@ -4,6 +4,7 @@ import { logger } from '../utils/logger.utils';
 import { Cart, LineItem } from '@commercetools/platform-sdk';
 import { createApiRoot } from '../client/create.client';
 import { CentPrecisionMoney } from '@commercetools/platform-sdk';
+import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 
 export interface ProductValue extends Record<string, unknown> {
   id: number;
@@ -21,7 +22,7 @@ export interface CategoryValue extends Record<string, unknown> {
 
 type Criteria = 'quantity' | 'value' | 'money';
 
-export type FormProps = {
+export type ProductRule = {
   type: 'flag' | 'sku' | 'category';
   criteria: Criteria;
   category?: CategoryValue;
@@ -36,7 +37,7 @@ export type Config = {
   key: string;
   cartLimits?: Array<CentPrecisionMoney>;
   cartLimitsCurrenciesConfigured?: Array<string>;
-  productRules?: Array<FormProps>;
+  productRules?: Array<ProductRule>;
 };
 
 // const applySampleRules = (
@@ -134,7 +135,8 @@ const applySKURules = (
   lineItems: Array<LineItem>,
   sku: string | undefined,
   criteria: Criteria,
-  totalValue?: CentPrecisionMoney
+  totalValue?: CentPrecisionMoney,
+  quantity?: number | string
 ) => {
   let count = 0;
   let value: CentPrecisionMoney | undefined;
@@ -150,7 +152,7 @@ const applySKURules = (
     }
   });
 
-  if (value !== undefined) {
+  if (criteria === 'value' && value !== undefined) {
     logger.info(
       'Checking if SKU ',
       sku,
@@ -174,13 +176,16 @@ const applySKURules = (
       );
       return false;
     }
+  } else if (criteria === 'quantity' && quantity) {
+    const converted =
+      typeof quantity === 'number' ? quantity : parseInt(quantity);
+    logger.info('SKU Maximum Quantity Validation:');
+    logger.info('Max Quantity: ', quantity);
+    logger.info('Qty on cart:', count);
+    logger.info('Quota exceeded? ', converted);
+    return count > converted;
   }
-
-  logger.info('SKU Maximum Quantity Validation:');
-  logger.info('Max Quantity: ', totalValue);
-  logger.info('Qty on cart:', count);
-  logger.info('Quota exceeded? ', count > (totalValue?.centAmount || 0) * 100);
-  return count > (totalValue?.centAmount || 0);
+  return true;
 };
 
 // const applyFlagRules = (
@@ -239,13 +244,75 @@ const applySKURules = (
 //   return hasError;
 // };
 
-/**
- * Handle the cart controller according to the action
- *
- * @param {string} action The action that comes with the request. Could be `Create` or `Update`
- * @param {Resource} resource The resource from the request body
- * @returns {Promise<object>} The data from the method that handles the action
- */
+const getCustomerBasedObjectKey = async (
+  customerId: string | undefined,
+  apiRoot: ByProjectKeyRequestBuilder
+) => {
+  let objectKey = 'general';
+  if (customerId) {
+    const loadedCustomerGroupKey = await apiRoot
+      .customers()
+      .withId({ ID: customerId })
+      .get({ queryArgs: { expand: ['customerGroup'] } })
+      .execute()
+      .then((response) => {
+        return response.body.customerGroup?.obj?.key;
+      });
+    if (loadedCustomerGroupKey) {
+      objectKey = loadedCustomerGroupKey;
+    }
+  }
+  return objectKey;
+};
+
+const loadConfig = async (
+  objectKey: string,
+  storeKey: string,
+  apiRoot: ByProjectKeyRequestBuilder
+) => {
+  let response = undefined;
+  try {
+    logger.info(
+      `Fetching rules for customer-group: ${objectKey} and store: ${storeKey}`
+    );
+    response = await apiRoot
+      .customObjects()
+      .withContainerAndKey({
+        container: `${objectKey}-cart-rules`,
+        key: storeKey,
+      })
+      .get()
+      .execute()
+      .then((response) => {
+        //logger.info(response);
+        return response.body;
+      });
+  } catch (error) {
+    logger.error(error);
+  }
+
+  if (!response) {
+    logger.info(`Couldn't find rules for ${objectKey}.`);
+    logger.info('Fetching rules for All Customers');
+    try {
+      response = await apiRoot
+        .customObjects()
+        .withContainerAndKey({
+          container: `general-cart-rules`,
+          key: storeKey,
+        })
+        .get()
+        .execute()
+        .then((response) => {
+          return response.body;
+        });
+    } catch (error) {
+      logger.info('No rules found... skipping');
+    }
+  }
+  return response;
+};
+
 export const cartController = async (action: string, resource: Resource) => {
   logger.info('Cart Action: ' + action);
   switch (action) {
@@ -256,87 +323,29 @@ export const cartController = async (action: string, resource: Resource) => {
       const customerId = cart.customerId;
       const lineItems = cart.lineItems;
       if (storeKey) {
-        const totalPrice = cart.totalPrice;
-
         const apiRoot = createApiRoot();
-        let objectKey = 'general';
-        if (customerId) {
-          const loadedCustomerGroupKey = await apiRoot
-            .customers()
-            .withId({ ID: customerId })
-            .get({ queryArgs: { expand: ['customerGroup'] } })
-            .execute()
-            .then((response) => {
-              return response.body.customerGroup?.obj?.key;
-            });
-          if (loadedCustomerGroupKey) {
-            objectKey = loadedCustomerGroupKey;
-          }
-        }
+        const objectKey = await getCustomerBasedObjectKey(customerId, apiRoot);
 
-        let response = null;
-
-        try {
-          logger.info(
-            `Fetching rules for customer-group: ${objectKey} and store: ${storeKey}`
-          );
-          response = await apiRoot
-            .customObjects()
-            .withContainerAndKey({
-              container: `${objectKey}-cart-rules`,
-              key: storeKey,
-            })
-            .get()
-            .execute()
-            .then((response) => {
-              //logger.info(response);
-              return response.body;
-            });
-        } catch (error) {
-          logger.error(error);
-        }
-
-        if (!response) {
-          logger.info(`Couldn't find rules for ${objectKey}.`);
-          logger.info('Fetching rules for All Customers');
-          try {
-            response = await apiRoot
-              .customObjects()
-              .withContainerAndKey({
-                container: `general-cart-rules`,
-                key: storeKey,
-              })
-              .get()
-              .execute()
-              .then((response) => {
-                return response.body;
-              });
-          } catch (error) {
-            logger.info('No rules found... skipping');
-            return { statusCode: 200 };
-          }
-        }
+        const response = await loadConfig(objectKey, storeKey, apiRoot);
 
         if (!response) {
           logger.info('Found no rules for quotas for store ', storeKey);
+          return { statusCode: 200 };
         }
         const config: Config = response.value;
 
-        const maximumCartValue: Array<CentPrecisionMoney> =
-          config.cartLimits || [];
         // const maxSamples = '';
-        const productRules = config.productRules || [];
 
         let errorFound = false;
         let ruleFlag = null;
 
-        if (maximumCartValue) {
+        if (config.cartLimits) {
           logger.info('Cart Maximum value Validation:');
-          logger.info('Max Cart values: ', maximumCartValue);
-          logger.info('Cart Total Value:', totalPrice);
-          maximumCartValue.map((maxCartRule) => {
-            if (totalPrice.currencyCode === maxCartRule.currencyCode) {
-              if (totalPrice.centAmount > maxCartRule.centAmount) {
+          logger.info('Max Cart values: ', config.cartLimits);
+          logger.info('Cart Total Value:', cart.totalPrice);
+          config.cartLimits.map((maxCartRule) => {
+            if (cart.totalPrice.currencyCode === maxCartRule.currencyCode) {
+              if (cart.totalPrice.centAmount > maxCartRule.centAmount) {
                 errorFound = true;
                 ruleFlag = { criteria: 'value' };
               }
@@ -360,16 +369,18 @@ export const cartController = async (action: string, resource: Resource) => {
 
         let productErrorFound = false;
 
-        if (!errorFound) {
-          for (const rule of productRules) {
+        if (!errorFound && config.productRules) {
+          for (const rule of config.productRules) {
             if (!productErrorFound) {
               ruleFlag = rule;
               if (rule.type === 'sku') {
+                logger.info(rule);
                 productErrorFound = applySKURules(
                   lineItems,
                   rule.product?.sku,
                   rule.criteria,
-                  rule.totalValue
+                  rule.totalValue,
+                  rule.quantity
                 );
               }
               // if (rule.type === 'category') {
