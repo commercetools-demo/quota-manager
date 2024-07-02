@@ -10,6 +10,7 @@ import { logger } from '../utils/logger.utils';
  * @returns {Promise<object>} The data from the method that handles the action
  */
 export const cartController = async (action: string, resource: Resource) => {
+  logger.info('Cart Action: ' + action);
   switch (action) {
     case 'Update':
       logger.info('Cart update executed', resource);

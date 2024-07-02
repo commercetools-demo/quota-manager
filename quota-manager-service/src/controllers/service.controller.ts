@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { apiSuccess } from '../api/success.api';
 import CustomError from '../errors/custom.error';
 import { cartController } from './cart.controller';
+import { logger } from '../utils/logger.utils';
 
 /**
  * Exposed service endpoint.
@@ -22,6 +23,7 @@ export const post = async (request: Request, response: Response) => {
 
   // Identify the type of resource in order to redirect
   // to the correct controller
+  logger.info('Resource type: ' + resource.typeId);
   switch (resource.typeId) {
     case 'cart':
       try {
@@ -47,7 +49,7 @@ export const post = async (request: Request, response: Response) => {
     default:
       throw new CustomError(
         500,
-        `Internal Server Error - Resource not recognized. Allowed values are 'cart', 'payments' or 'orders'.`
+        `Internal Server Error - Resource not recognized. Allowed values are 'cart'.`
       );
   }
 };

@@ -6,8 +6,9 @@ const serviceRouter = Router();
 
 serviceRouter.post('/', async (req, res) => {
   try {
-    logger.info('Cart update extension executed');
+    logger.info('Executing cart update extension');
     await post(req, res);
+    logger.info('Cart update extension executed');
   } catch (e) {
     res.status(500);
   }
