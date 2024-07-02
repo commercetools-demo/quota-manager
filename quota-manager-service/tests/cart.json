@@ -1,0 +1,292 @@
+{
+  "id": "cffa74f9-fa27-46d0-b425-bc2de7a7aa45",
+  "obj": {
+    "anonymousId": "995aed98-d37e-4a7f-abfc-3cb4f19feda7",
+    "cartState": "Active",
+    "country": "US",
+    "createdAt": "2024-07-01T15:44:11.148Z",
+    "createdBy": {
+      "clientId": "oRQfryBe0cKQ-s-B2F6X8oV6",
+      "isPlatformClient": false
+    },
+    "customLineItems": [],
+    "directDiscounts": [],
+    "discountCodes": [],
+    "id": "cffa74f9-fa27-46d0-b425-bc2de7a7aa45",
+    "inventoryMode": "ReserveOnOrder",
+    "itemShippingAddresses": [],
+    "lastMessageSequenceNumber": 1,
+    "lastModifiedAt": "2024-07-02T07:40:02.224Z",
+    "lastModifiedBy": {
+      "clientId": "oRQfryBe0cKQ-s-B2F6X8oV6",
+      "isPlatformClient": false
+    },
+    "lineItems": [
+      {
+        "addedAt": "2024-07-01T15:44:16.496Z",
+        "discountedPricePerQuantity": [],
+        "id": "2945f28c-a591-4743-88d3-30c6b623cd13",
+        "lastModifiedAt": "2024-07-02T08:56:56.229Z",
+        "lineItemMode": "Standard",
+        "name": {
+          "de-DE": "Opal King Bett",
+          "en-GB": "Opal King Bed",
+          "en-US": "Opal King Bed",
+          "es-ES": "Cama King Opal",
+          "fr-FR": "Lit King opale",
+          "it-IT": "Letto matrimoniale opale",
+          "nl-NL": "Opaal kingsize bed",
+          "pt-PT": "Cama King-size Opala"
+        },
+        "perMethodTaxRate": [],
+        "price": {
+          "country": "US",
+          "id": "8581f4c8-0cee-47cd-b6a5-d363ffd24ee5",
+          "key": "opal-king-bed-MTB-023-US-USD",
+          "value": {
+            "centAmount": 129900,
+            "currencyCode": "USD",
+            "fractionDigits": 2,
+            "type": "centPrecision"
+          }
+        },
+        "priceMode": "Platform",
+        "productId": "f82fc784-e89d-489f-bca4-a17307997ea2",
+        "productKey": "opal-king-bed",
+        "productSlug": {
+          "de-DE": "opal-kingsize-bett",
+          "en-GB": "opal-king-bed",
+          "en-US": "opal-king-bed",
+          "es-ES": "opal-king-bed",
+          "fr-FR": "opal-king-bed",
+          "it-IT": "opal-king-bed",
+          "nl-NL": "opal-king-bed",
+          "pt-PT": "opal-king-bed"
+        },
+        "productType": {
+          "id": "fc4487a6-65cb-4433-916a-f669e094e4d8",
+          "typeId": "product-type",
+          "version": 102
+        },
+        "quantity": 2,
+        "state": [
+          {
+            "quantity": 2,
+            "state": {
+              "id": "a8925676-f4d1-4750-8032-e729667a9912",
+              "typeId": "state"
+            }
+          }
+        ],
+        "taxedPricePortions": [],
+        "totalPrice": {
+          "centAmount": 259800,
+          "currencyCode": "USD",
+          "fractionDigits": 2,
+          "type": "centPrecision"
+        },
+        "variant": {
+          "assets": [],
+          "attributes": [
+            {
+              "name": "productspec",
+              "value": {
+                "de-DE": "- Montage inklusive",
+                "en-GB": "- Assembly included",
+                "en-US": "- Assembly included",
+                "es-ES": "- Montaje incluido",
+                "fr-FR": "- Assemblage inclus",
+                "it-IT": "- Montaggio incluso",
+                "nl-NL": "- Montage inbegrepen",
+                "pt-PT": "- Montagem incluída"
+              }
+            },
+            {
+              "name": "color",
+              "value": {
+                "de-DE": "#000",
+                "en-GB": "#000",
+                "en-US": "#000",
+                "es-ES": "#000",
+                "fr-FR": "#000",
+                "it-IT": "#000",
+                "nl-NL": "#000",
+                "pt-PT": "#000"
+              }
+            },
+            {
+              "name": "colorlabel",
+              "value": {
+                "de-DE": "Schwarz",
+                "en-GB": "Black",
+                "en-US": "Black",
+                "es-ES": "Negro",
+                "fr-FR": "Noir",
+                "it-IT": "Nero",
+                "nl-NL": "Zwart",
+                "pt-PT": "Preto"
+              }
+            },
+            {
+              "name": "new-arrival",
+              "value": false
+            },
+            {
+              "name": "color-filter",
+              "value": {
+                "key": "#000",
+                "label": {
+                  "de-DE": "Schwarz",
+                  "en-GB": "Black",
+                  "en-US": "Black"
+                }
+              }
+            },
+            {
+              "name": "product-owner",
+              "value": {
+                "key": "Andy James",
+                "label": "Andy James"
+              }
+            }
+          ],
+          "availability": {
+            "availableQuantity": 100,
+            "id": "05afb8ea-aaff-4e78-85fc-fbe2159a2e36",
+            "isOnStock": true,
+            "version": 1
+          },
+          "id": 1,
+          "images": [
+            {
+              "dimensions": {
+                "h": 0,
+                "w": 2000
+              },
+              "url": "https://storage.googleapis.com/merchant-center-europe/sample-data/goodstore/Opal_King_Bed-1.1.jpeg"
+            }
+          ],
+          "key": "MTB-023",
+          "prices": [
+            {
+              "country": "GB",
+              "id": "ebd27928-4e9e-4c5e-93b7-5fbc73e52112",
+              "key": "opal-king-bed-MTB-023-GB-GBP",
+              "value": {
+                "centAmount": 129900,
+                "currencyCode": "GBP",
+                "fractionDigits": 2,
+                "type": "centPrecision"
+              }
+            },
+            {
+              "country": "US",
+              "id": "8581f4c8-0cee-47cd-b6a5-d363ffd24ee5",
+              "key": "opal-king-bed-MTB-023-US-USD",
+              "value": {
+                "centAmount": 129900,
+                "currencyCode": "USD",
+                "fractionDigits": 2,
+                "type": "centPrecision"
+              }
+            },
+            {
+              "country": "IT",
+              "id": "158a79ce-7d1c-42af-913d-80d28a37afea",
+              "key": "opal-king-bed-MTB-023-IT-EUR",
+              "value": {
+                "centAmount": 103920,
+                "currencyCode": "EUR",
+                "fractionDigits": 2,
+                "type": "centPrecision"
+              }
+            },
+            {
+              "country": "FR",
+              "id": "067b3e4f-a058-4d20-8c73-69af2c1d1479",
+              "key": "opal-king-bed-MTB-023-FR-EUR",
+              "value": {
+                "centAmount": 103920,
+                "currencyCode": "EUR",
+                "fractionDigits": 2,
+                "type": "centPrecision"
+              }
+            },
+            {
+              "country": "PT",
+              "id": "b67a7f7a-3fa8-41bc-8672-c4dc67022d18",
+              "key": "opal-king-bed-MTB-023-PT-EUR",
+              "value": {
+                "centAmount": 103920,
+                "currencyCode": "EUR",
+                "fractionDigits": 2,
+                "type": "centPrecision"
+              }
+            },
+            {
+              "country": "DE",
+              "id": "9befd695-2518-4dd7-9e5b-da707d6b0a50",
+              "key": "opal-king-bed-MTB-023-DE-EUR",
+              "value": {
+                "centAmount": 129900,
+                "currencyCode": "EUR",
+                "fractionDigits": 2,
+                "type": "centPrecision"
+              }
+            },
+            {
+              "country": "NL",
+              "id": "88101a06-4ea7-491c-a2f6-046e933ead68",
+              "value": {
+                "centAmount": 129900,
+                "currencyCode": "EUR",
+                "fractionDigits": 2,
+                "type": "centPrecision"
+              }
+            },
+            {
+              "country": "ES",
+              "id": "da320c6d-bb0e-4abb-aab3-a20f7ebdd6b5",
+              "value": {
+                "centAmount": 129900,
+                "currencyCode": "EUR",
+                "fractionDigits": 2,
+                "type": "centPrecision"
+              }
+            },
+            {
+              "country": "CA",
+              "id": "46ee56dd-91bf-4aa8-a70a-3790edfc5510",
+              "value": {
+                "centAmount": 129900,
+                "currencyCode": "CAD",
+                "fractionDigits": 2,
+                "type": "centPrecision"
+              }
+            }
+          ],
+          "sku": "MTB-023"
+        }
+      }
+    ],
+    "locale": "en-US",
+    "origin": "Customer",
+    "refusedGifts": [],
+    "shipping": [],
+    "shippingMode": "Single",
+    "taxCalculationMode": "LineItemLevel",
+    "taxMode": "Platform",
+    "taxRoundingMode": "HalfEven",
+    "totalLineItemQuantity": 2,
+    "totalPrice": {
+      "centAmount": 259800,
+      "currencyCode": "USD",
+      "fractionDigits": 2,
+      "type": "centPrecision"
+    },
+    "type": "Cart",
+    "version": 9,
+    "versionModifiedAt": "2024-07-02T07:40:02.224Z"
+  },
+  "typeId": "cart"
+}
